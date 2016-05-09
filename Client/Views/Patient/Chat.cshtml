@@ -1,0 +1,59 @@
+﻿@model Client.ViewModels.ChatViewModel
+@{
+    ViewBag.Title = "Patient Chat";
+}
+
+<div class="page-header">
+    <h1>@Model.Name</h1>
+</div>
+@Html.Partial("_Chat")
+
+@section Scripts {
+    <script>
+        $(function () {
+            function sendMessage() {
+                var message = $('#message_input').val();
+                if (message) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("Message", "Patient")',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            id: @Model.Id,
+                            message: message
+                        })
+                    }).then(function() {
+                        $('#message_input').val(null);
+                    });
+                }
+            }
+
+            function addMessage(m) {
+                $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
+            }
+
+            $.connection.chatHub.client.newMessage = function(m) {
+                addMessage(m);
+            };
+
+            $.getJSON('@Url.Action("Messages", "Patient", new { id = Model.Id })').then(function (data) {
+                data.forEach(function (m) {
+                    addMessage(m);
+                });
+
+                $.connection.hub.start().done(function () {
+                    $.connection.chatHub.server.join(@Model.Id);
+
+                    $('#message_input').on('keypress', function() {
+                        var keycode = event.keyCode ? event.keyCode : event.which;
+                        if(keycode == '13'){
+                            sendMessage();
+                        }
+                    });
+
+                    $('#send_button').on('click', sendMessage);
+                });
+            });
+        });
+    </script>
+}

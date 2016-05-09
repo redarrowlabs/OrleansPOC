@@ -1,14 +1,18 @@
+using Common;
 using Orleans;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
     public interface IPatientGrain : IGrainWithIntegerKey
     {
-        Task<IProviderGrain> CurrentProvider();
+        Task SyncProvider(IProviderGrain provider);
 
-        Task SetProvider(IProviderGrain provider);
+        Task<IEnumerable<ChatMessage>> Messages();
 
-        Task SendMessage(string message);
+        Task AddMessage(ChatMessage message);
+
+        Task SendMessage(ChatMessage message);
     }
 }

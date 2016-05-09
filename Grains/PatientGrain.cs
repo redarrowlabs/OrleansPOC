@@ -1,29 +1,58 @@
+using Common;
 using GrainInterfaces;
+using Microsoft.AspNet.SignalR.Client;
 using Orleans;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Grains
 {
     public class PatientGrain : Grain, IPatientGrain
     {
-        private IProviderGrain _provider;
+        private HubConnection _hubConnection;
+        private IHubProxy _hub;
 
-        public Task<IProviderGrain> CurrentProvider()
+        private IProviderGrain _provider;
+        private List<ChatMessage> _messages;
+
+        public override async Task OnActivateAsync()
         {
-            return Task.FromResult(_provider);
+            _messages = new List<ChatMessage>();
+
+            _hubConnection = new HubConnection("http://localhost:8080");
+            _hub = _hubConnection.CreateHubProxy("ChatHub");
+            await _hubConnection.Start();
+
+            await base.OnActivateAsync();
         }
 
-        public Task SetProvider(IProviderGrain provider)
+        public Task SyncProvider(IProviderGrain provider)
         {
             _provider = provider;
 
             return TaskDone.Done;
         }
 
-        public Task SendMessage(string message)
+        public Task<IEnumerable<ChatMessage>> Messages()
         {
-            Console.WriteLine(message);
+            return Task.FromResult(_messages.AsEnumerable());
+        }
+
+        public Task AddMessage(ChatMessage message)
+        {
+            _messages.Add(message);
+
+            return TaskDone.Done;
+        }
+
+        public Task SendMessage(ChatMessage message)
+        {
+            _messages.Add(message);
+            if (_hubConnection.State == ConnectionState.Connected)
+            {
+                _hub.Invoke("SendMessage", this.GetPrimaryKeyLong(), message);
+            }
 
             return TaskDone.Done;
         }

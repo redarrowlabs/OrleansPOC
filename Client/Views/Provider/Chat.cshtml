@@ -1,0 +1,86 @@
+﻿@model Client.ViewModels.ChatViewModel
+@{
+    ViewBag.Title = "Provider Chat";
+}
+
+<div class="page-header">
+    <h1>@Model.Name</h1>
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <select id="patient_select" class="form-control">
+            <option value="" selected disabled>Select Patient</option>
+        </select>
+    </div>
+</div>
+@Html.Partial("_Chat")
+
+@section Scripts {
+    <script>
+        $(function () {
+            var currentPatientId;
+
+            function sendMessage() {
+                var message = $('#message_input').val();
+                if (message) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("Message", "Provider")',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            id: @Model.Id,
+                            patientId: $('#patient_select').val(),
+                            message: message
+                        })
+                    }).then(function() {
+                        $('#message_input').val(null);
+                    });
+                }
+            }
+
+            function addPatient(p) {
+                $('#patient_select').append(`<option value=${p.id}>${p.name}</option>`);
+            }
+
+            function addMessage(m) {
+                $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
+            }
+
+            $.connection.chatHub.client.newMessage = function(m) {
+                addMessage(m);
+            };
+
+            $.getJSON('@Url.Action("Patients", "Provider", new { id = Model.Id })').then(function (data) {
+                data.forEach(function (p) {
+                    addPatient(p);
+                });
+
+                $.connection.hub.start().done(function () {
+                    $('#patient_select').on('change', function() {
+                        var patientId = $(this).val();
+
+                        $.connection.chatHub.server.leave(currentPatientId);
+                        $('#chat_table > tbody').empty();
+                        $.getJSON('@Url.Action("Messages", "Provider", new { id = Model.Id })?patientId=' + patientId).then(function (data) {
+                            data.forEach(function (m) {
+                                addMessage(m);
+                            });
+
+                            $.connection.chatHub.server.join(patientId);
+                            currentPatientId = patientId;
+                        });
+                    });
+
+                    $('#message_input').on('keypress', function() {
+                        var keycode = event.keyCode ? event.keyCode : event.which;
+                        if(keycode == '13'){
+                            sendMessage();
+                        }
+                    });
+
+                    $('#send_button').on('click', sendMessage);
+                });
+            });
+        });
+    </script>
+}

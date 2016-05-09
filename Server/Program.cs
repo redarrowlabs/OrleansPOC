@@ -1,3 +1,4 @@
+using GrainInterfaces;
 using System;
 
 namespace Server
@@ -8,20 +9,24 @@ namespace Server
 
         private static void Main(string[] args)
         {
-            // The Orleans silo environment is initialized in its own app domain in order to more
-            // closely emulate the distributed situation, when the client and the server cannot
-            // pass data via shared memory.
             AppDomain hostDomain = AppDomain.CreateDomain("OrleansHost", null, new AppDomainSetup
             {
                 AppDomainInitializer = InitSilo,
                 AppDomainInitializerArguments = args,
             });
 
-            //var config = ClientConfiguration.LocalhostSilo();
-            //GrainClient.Initialize(config);
+            // Seed Data
+            var orleansConfig = Orleans.Runtime.Configuration.ClientConfiguration.LocalhostSilo();
+            Orleans.GrainClient.Initialize(orleansConfig);
+            var pt1 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
+            var pt2 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(2);
+            var pr1 = Orleans.GrainClient.GrainFactory.GetGrain<IProviderGrain>(1);
+
+            pr1.AddPatient(pt1).Wait();
+            pr1.AddPatient(pt2).Wait();
 
             Console.WriteLine("Orleans Silo is running.\nPress Enter to terminate...");
-            Console.ReadLine();
+            Console.ReadKey(true);
 
             hostDomain.DoCallBack(ShutdownSilo);
         }

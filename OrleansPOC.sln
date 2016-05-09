@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grains", "Grains\Grains.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{FFD9D3E9-ECAF-4330-B4D8-5A821573803C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "Api\Api.csproj", "{8B76E7F0-6975-4301-99C4-5957FD3F276F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{FA67A9FD-D513-49D6-8B41-CE0D381D1239}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{FFD9D3E9-ECAF-4330-B4D8-5A821573803C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFD9D3E9-ECAF-4330-B4D8-5A821573803C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFD9D3E9-ECAF-4330-B4D8-5A821573803C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B76E7F0-6975-4301-99C4-5957FD3F276F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B76E7F0-6975-4301-99C4-5957FD3F276F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B76E7F0-6975-4301-99C4-5957FD3F276F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B76E7F0-6975-4301-99C4-5957FD3F276F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA67A9FD-D513-49D6-8B41-CE0D381D1239}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA67A9FD-D513-49D6-8B41-CE0D381D1239}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA67A9FD-D513-49D6-8B41-CE0D381D1239}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA67A9FD-D513-49D6-8B41-CE0D381D1239}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
