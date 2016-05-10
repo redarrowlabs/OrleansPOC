@@ -2,9 +2,7 @@
 using Common;
 using GrainInterfaces;
 using Orleans;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -19,13 +17,7 @@ namespace Api.Controllers
         public async Task<IEnumerable<Patient>> Patients(long id)
         {
             var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
-            var patientGrains = await provider.CurrentPatients();
-
-            return patientGrains.Select(x => new Patient
-            {
-                Id = x.GetPrimaryKeyLong(),
-                Name = "Patient" + x.GetPrimaryKeyLong()
-            });
+            return await provider.CurrentPatients();
         }
 
         [HttpGet]
@@ -41,15 +33,7 @@ namespace Api.Controllers
         public async Task<IHttpActionResult> SendMessage(ProviderChatMessage message)
         {
             var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(message.Id);
-            await provider.SendMessage(
-                message.PatientId,
-                new ChatMessage
-                {
-                    Name = "Provider" + message.Id,
-                    Text = message.Message,
-                    Received = DateTime.UtcNow
-                }
-            );
+            await provider.SendMessage(message.PatientId, message.Text);
 
             return StatusCode(HttpStatusCode.NoContent);
         }

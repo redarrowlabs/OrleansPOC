@@ -1,5 +1,5 @@
-﻿using Client.ViewModels;
-using Common;
+﻿using Client.Models;
+using Client.ViewModels;
 using Flurl;
 using Flurl.Http;
 using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Client.Controllers
             var model = new ChatViewModel
             {
                 Id = id,
-                Name = "Provider" + id
+                Name = "Provider " + id
             };
 
             return View(model);
@@ -28,7 +28,7 @@ namespace Client.Controllers
         {
             var patients = await BASE_URI
                 .AppendPathSegments("provider", "chat", "patients", id.ToString())
-                .GetJsonAsync<IEnumerable<Patient>>();
+                .GetJsonAsync<IEnumerable<PatientOption>>();
 
             return Json(patients, JsonRequestBehavior.AllowGet);
         }
@@ -37,7 +37,7 @@ namespace Client.Controllers
         {
             var messages = await BASE_URI
                 .AppendPathSegments("provider", "chat", "messages", id.ToString(), patientId.ToString())
-                .GetJsonAsync<IEnumerable<ChatMessage>>();
+                .GetJsonAsync<IEnumerable<UserChatMessage>>();
 
             return Json(messages, JsonRequestBehavior.AllowGet);
         }
@@ -51,7 +51,7 @@ namespace Client.Controllers
                 {
                     id = id,
                     patientId = patientId,
-                    message = message
+                    text = message
                 });
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);

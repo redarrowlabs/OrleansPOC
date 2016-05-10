@@ -7,12 +7,12 @@ namespace GrainInterfaces
 {
     public interface IProviderGrain : IGrainWithIntegerKey
     {
-        Task<IEnumerable<IPatientGrain>> CurrentPatients();
+        Task<IEnumerable<Patient>> CurrentPatients();
 
         Task AddPatient(IPatientGrain patient);
 
         Task<IEnumerable<ChatMessage>> Messages(long patientId);
 
-        Task SendMessage(long patientId, ChatMessage message);
+        Task SendMessage(long patientId, string message);
     }
 }

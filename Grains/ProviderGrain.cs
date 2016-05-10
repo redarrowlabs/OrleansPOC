@@ -2,6 +2,7 @@ using Common;
 using GrainInterfaces;
 using Microsoft.AspNet.SignalR.Client;
 using Orleans;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,10 +14,12 @@ namespace Grains
         private HubConnection _hubConnection;
         private IHubProxy _hub;
 
+        private string _name;
         private Dictionary<long, IPatientGrain> _patients;
 
         public override async Task OnActivateAsync()
         {
+            _name = "Provider " + this.GetPrimaryKeyLong();
             _patients = new Dictionary<long, IPatientGrain>();
 
             _hubConnection = new HubConnection("http://localhost:8090");
@@ -32,9 +35,18 @@ namespace Grains
             await patient.SyncProvider(this);
         }
 
-        public Task<IEnumerable<IPatientGrain>> CurrentPatients()
+        public async Task<IEnumerable<Patient>> CurrentPatients()
         {
-            return Task.FromResult(_patients.Values.AsEnumerable());
+            return await Task.WhenAll(
+                _patients.Values
+                    .Select(async x =>
+                        new Patient
+                        {
+                            Id = x.GetPrimaryKeyLong(),
+                            Name = await x.GetName()
+                        }
+                    )
+            );
         }
 
         public async Task<IEnumerable<ChatMessage>> Messages(long patientId)
@@ -44,13 +56,20 @@ namespace Grains
             return messages.OrderBy(x => x.Received).ToList();
         }
 
-        public Task SendMessage(long patientId, ChatMessage message)
+        public Task SendMessage(long patientId, string message)
         {
-            _patients[patientId].AddMessage(message);
+            var cm = new ChatMessage
+            {
+                Name = _name,
+                Received = DateTime.UtcNow,
+                Text = message
+            };
+
+            _patients[patientId].AddMessage(cm);
 
             if (_hubConnection.State == ConnectionState.Connected)
             {
-                _hub.Invoke("SendMessage", patientId, message);
+                _hub.Invoke("SendMessage", patientId, cm);
             }
 
             return TaskDone.Done;

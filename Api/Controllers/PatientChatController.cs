@@ -2,7 +2,6 @@
 using Common;
 using GrainInterfaces;
 using Orleans;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -26,14 +25,7 @@ namespace Api.Controllers
         public async Task<IHttpActionResult> SendMessage(PatientChatMessage message)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(message.Id);
-            await patient.SendMessage(
-                new ChatMessage
-                {
-                    Name = "Patient" + message.Id,
-                    Text = message.Message,
-                    Received = DateTime.UtcNow
-                }
-            );
+            await patient.SendMessage(message.Text);
 
             return StatusCode(HttpStatusCode.NoContent);
         }
