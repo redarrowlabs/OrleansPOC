@@ -20,7 +20,7 @@ namespace Grains
         {
             _messages = new List<ChatMessage>();
 
-            _hubConnection = new HubConnection("http://localhost:8080");
+            _hubConnection = new HubConnection("http://localhost:8090");
             _hub = _hubConnection.CreateHubProxy("ChatHub");
             await _hubConnection.Start();
 

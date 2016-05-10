@@ -46,6 +46,8 @@
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
             }
 
+            $.connection.hub.url = 'http://localhost:8090/signalr';
+
             $.connection.chatHub.client.newMessage = function(m) {
                 addMessage(m);
             };

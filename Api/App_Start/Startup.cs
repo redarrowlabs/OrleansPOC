@@ -1,12 +1,13 @@
-﻿using Client.Infrastructure;
+﻿using Api.Infrastructure;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
+using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Owin;
 
-[assembly: OwinStartup(typeof(Client.Startup))]
+[assembly: OwinStartup(typeof(Api.Startup))]
 
-namespace Client
+namespace Api
 {
     public class Startup
     {
@@ -21,6 +22,7 @@ namespace Client
                    () => serializer
                 );
 
+                map.UseCors(CorsOptions.AllowAll);
                 map.RunSignalR();
             });
         }
