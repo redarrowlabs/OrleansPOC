@@ -1,4 +1,6 @@
-﻿using Client.ViewModels;
+﻿using AppSettingsByConvention;
+using Client.Infrastructure;
+using Client.ViewModels;
 using Common;
 using Flurl;
 using Flurl.Http;
@@ -9,11 +11,11 @@ namespace Client.Controllers
 {
     public class PatientController : Controller
     {
-        private const string API_BASE_URL = "http://localhost:8090";
-
         public async Task<ActionResult> Chat(long id)
         {
-            var patient = await API_BASE_URL
+            var config = SettingsByConvention.ForInterface<IConfiguration>();
+
+            var patient = await config.ApiBaseUrl
                 .AppendPathSegments("patient", id.ToString(), "chat", "name")
                 .GetJsonAsync<Patient>();
 
@@ -21,7 +23,7 @@ namespace Client.Controllers
             {
                 Id = patient.Id,
                 Name = patient.Name,
-                ApiBaseUrl = API_BASE_URL
+                ApiBaseUrl = config.ApiBaseUrl
             };
 
             return View(model);

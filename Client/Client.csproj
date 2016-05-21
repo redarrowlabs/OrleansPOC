@@ -43,6 +43,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AppSettingsByConvention, Version=2.0.0.29344, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AppSettingsByConvention.2.0.0\lib\net45\AppSettingsByConvention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Flurl, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Flurl.2.0.0\lib\dotnet5.4\Flurl.dll</HintPath>
       <Private>True</Private>
@@ -143,6 +147,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\JsonNetAttribute.cs" />
     <Compile Include="Infrastructure\JsonNetResult.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />

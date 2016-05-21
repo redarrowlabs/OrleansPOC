@@ -11,7 +11,7 @@ namespace Client
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
+                url: "{controller}/{id}/{action}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
         }

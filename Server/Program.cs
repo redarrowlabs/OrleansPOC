@@ -18,6 +18,7 @@ namespace Server
             // Seed Data
             var orleansConfig = Orleans.Runtime.Configuration.ClientConfiguration.LocalhostSilo();
             Orleans.GrainClient.Initialize(orleansConfig);
+
             var pt1 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
             pt1.SetName("Justin Case");
 
