@@ -25,12 +25,11 @@
                 if (message) {
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("Message", "Provider")',
+                        url: '@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "messages").ToString()',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            id: @Model.Id,
                             patientId: $('#patient_select').val(),
-                            message: message
+                            text: message
                         })
                     }).then(function() {
                         $('#message_input').val(null);
@@ -46,13 +45,13 @@
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
             }
 
-            $.connection.hub.url = 'http://localhost:8090/signalr';
+            $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
 
             $.connection.chatHub.client.newMessage = function(m) {
                 addMessage(m);
             };
 
-            $.getJSON('@Url.Action("Patients", "Provider", new { id = Model.Id })').then(function (data) {
+            $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "patients").ToString()').then(function (data) {
                 data.forEach(function (p) {
                     addPatient(p);
                 });
@@ -63,7 +62,7 @@
 
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
-                        $.getJSON('@Url.Action("Messages", "Provider", new { id = Model.Id })?patientId=' + patientId).then(function (data) {
+                        $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "messages").ToString()/' + patientId).then(function (data) {
                             data.forEach(function (m) {
                                 addMessage(m);
                             });

@@ -1,6 +1,6 @@
 ﻿namespace Client.ViewModels
 {
-    public class ChatViewModel
+    public class ChatViewModel : BaseViewModel
     {
         public long Id { get; set; }
 

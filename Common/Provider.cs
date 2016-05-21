@@ -1,6 +1,6 @@
-﻿namespace Client.Models
+﻿namespace Common
 {
-    public class PatientOption
+    public class Provider
     {
         public long Id { get; set; }
 

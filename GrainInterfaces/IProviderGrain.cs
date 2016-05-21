@@ -1,11 +1,10 @@
 using Common;
-using Orleans;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface IProviderGrain : IGrainWithIntegerKey
+    public interface IProviderGrain : IEntityGrain
     {
         Task<IEnumerable<Patient>> CurrentPatients();
 

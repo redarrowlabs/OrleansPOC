@@ -145,8 +145,7 @@
     </Compile>
     <Compile Include="Infrastructure\JsonNetAttribute.cs" />
     <Compile Include="Infrastructure\JsonNetResult.cs" />
-    <Compile Include="Models\PatientOption.cs" />
-    <Compile Include="Models\UserChatMessage.cs" />
+    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -167,6 +166,12 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{fa67a9fd-d513-49d6-8b41-ce0d381d1239}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

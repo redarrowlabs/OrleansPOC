@@ -1,9 +1,7 @@
 ﻿namespace Api.Models
 {
-    public class ProviderChatMessage
+    public class ProviderChatRequest
     {
-        public long Id { get; set; }
-
         public long PatientId { get; set; }
 
         public string Text { get; set; }

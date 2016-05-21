@@ -9,23 +9,37 @@ using System.Web.Http;
 
 namespace Api.Controllers
 {
-    [RoutePrefix("patient/chat")]
+    [RoutePrefix("patient/{id:long}/chat")]
     public class PatientChatController : ApiController
     {
         [HttpGet]
-        [Route("messages/{id:long}")]
+        [Route("name")]
+        public async Task<Patient> Name(long id)
+        {
+            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
+
+            return new Patient
+            {
+                Id = id,
+                Name = await patient.GetName()
+            };
+        }
+
+        [HttpGet]
+        [Route("messages")]
         public Task<IEnumerable<ChatMessage>> Messages(long id)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
+
             return patient.Messages();
         }
 
         [HttpPost]
         [Route("messages")]
-        public async Task<IHttpActionResult> SendMessage(PatientChatMessage message)
+        public async Task<IHttpActionResult> SendMessage(long id, PatientChatRequest request)
         {
-            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(message.Id);
-            await patient.SendMessage(message.Text);
+            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
+            await patient.SendMessage(request.Text);
 
             return StatusCode(HttpStatusCode.NoContent);
         }

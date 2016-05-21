@@ -9,31 +9,46 @@ using System.Web.Http;
 
 namespace Api.Controllers
 {
-    [RoutePrefix("provider/chat")]
+    [RoutePrefix("provider/{id:long}/chat")]
     public class ProviderChatController : ApiController
     {
         [HttpGet]
-        [Route("patients/{id:long}")]
+        [Route("name")]
+        public async Task<Provider> Name(long id)
+        {
+            var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
+
+            return new Provider
+            {
+                Id = id,
+                Name = await provider.GetName()
+            };
+        }
+
+        [HttpGet]
+        [Route("patients")]
         public async Task<IEnumerable<Patient>> Patients(long id)
         {
             var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
+
             return await provider.CurrentPatients();
         }
 
         [HttpGet]
-        [Route("messages/{id:long}/{patientId:long}")]
+        [Route("messages/{patientId:long}")]
         public Task<IEnumerable<ChatMessage>> Messages(long id, long patientId)
         {
             var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
+
             return provider.Messages(patientId);
         }
 
         [HttpPost]
         [Route("messages")]
-        public async Task<IHttpActionResult> SendMessage(ProviderChatMessage message)
+        public async Task<IHttpActionResult> SendMessage(long id, ProviderChatRequest request)
         {
-            var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(message.Id);
-            await provider.SendMessage(message.PatientId, message.Text);
+            var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
+            await provider.SendMessage(request.PatientId, request.Text);
 
             return StatusCode(HttpStatusCode.NoContent);
         }

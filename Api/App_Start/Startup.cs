@@ -13,6 +13,8 @@ namespace Api
     {
         public void Configuration(IAppBuilder app)
         {
+            app.UseCors(CorsOptions.AllowAll);
+
             app.Map("/signalr", map =>
             {
                 var settings = new JsonSerializerSettings { ContractResolver = new SignalRContractResolver() };

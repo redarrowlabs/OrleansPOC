@@ -29,6 +29,18 @@ namespace Grains
             await base.OnActivateAsync();
         }
 
+        public Task<string> GetName()
+        {
+            return Task.FromResult(_name);
+        }
+
+        public Task SetName(string name)
+        {
+            _name = name;
+
+            return TaskDone.Done;
+        }
+
         public async Task AddPatient(IPatientGrain patient)
         {
             _patients.Add(patient.GetPrimaryKeyLong(), patient);

@@ -19,8 +19,13 @@ namespace Server
             var orleansConfig = Orleans.Runtime.Configuration.ClientConfiguration.LocalhostSilo();
             Orleans.GrainClient.Initialize(orleansConfig);
             var pt1 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
+            pt1.SetName("Justin Case");
+
             var pt2 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(2);
+            pt2.SetName("Gene Poole");
+
             var pr1 = Orleans.GrainClient.GrainFactory.GetGrain<IProviderGrain>(1);
+            pr1.SetName("Dr. Snuggles");
 
             pr1.AddPatient(pt1).Wait();
             pr1.AddPatient(pt2).Wait();

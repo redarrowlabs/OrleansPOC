@@ -1,4 +1,5 @@
 ﻿@model Client.ViewModels.ChatViewModel
+@using Flurl;
 @{
     ViewBag.Title = "Patient Chat";
 }
@@ -16,13 +17,12 @@
                 if (message) {
                     $.ajax({
                         type: 'POST',
-                        url: '@Url.Action("Message", "Patient")',
+                        url: '@Model.ApiBaseUrl.AppendPathSegments("patient", Model.Id, "chat", "messages").ToString()',
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            id: @Model.Id,
-                            message: message
+                            text: message
                         })
-                    }).then(function() {
+                    }).then(function () {
                         $('#message_input').val(null);
                     });
                 }
@@ -32,13 +32,13 @@
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
             }
 
-            $.connection.hub.url = 'http://localhost:8090/signalr';
+            $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
 
-            $.connection.chatHub.client.newMessage = function(m) {
+            $.connection.chatHub.client.newMessage = function (m) {
                 addMessage(m);
             };
 
-            $.getJSON('@Url.Action("Messages", "Patient", new { id = Model.Id })').then(function (data) {
+            $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("patient", Model.Id, "chat", "messages").ToString()').then(function (data) {
                 data.forEach(function (m) {
                     addMessage(m);
                 });
@@ -46,9 +46,9 @@
                 $.connection.hub.start().done(function () {
                     $.connection.chatHub.server.join(@Model.Id);
 
-                    $('#message_input').on('keypress', function() {
+                    $('#message_input').on('keypress', function () {
                         var keycode = event.keyCode ? event.keyCode : event.which;
-                        if(keycode == '13'){
+                        if (keycode == '13') {
                             sendMessage();
                         }
                     });

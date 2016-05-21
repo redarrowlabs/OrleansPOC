@@ -35,6 +35,13 @@ namespace Grains
             return Task.FromResult(_name);
         }
 
+        public Task SetName(string name)
+        {
+            _name = name;
+
+            return TaskDone.Done;
+        }
+
         public Task SyncProvider(IProviderGrain provider)
         {
             _provider = provider;
