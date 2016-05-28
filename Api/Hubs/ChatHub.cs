@@ -6,11 +6,13 @@ namespace Client.Hubs
 {
     public class ChatHub : Hub
     {
+        [Authorize]
         public Task Join(long id)
         {
             return Groups.Add(Context.ConnectionId, id.ToString());
         }
 
+        [Authorize]
         public Task Leave(long id)
         {
             return Groups.Remove(Context.ConnectionId, id.ToString());

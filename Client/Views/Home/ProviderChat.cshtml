@@ -1,6 +1,8 @@
 ﻿@model Client.ViewModels.ChatViewModel
 @{
     ViewBag.Title = "Provider Chat";
+
+    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "provider", Model.Id, "chat").ToString();
 }
 
 <div class="page-header">
@@ -16,7 +18,12 @@
 @Html.Partial("_Chat")
 
 @section Scripts {
+    <script src="@Model.ApiBaseUrl.AppendPathSegments("signalr", "hubs")"></script>
     <script>
+        $(document).ajaxSend(function (event, request) {
+            request.setRequestHeader('Authorization', 'Bearer @Model.Token');
+        });
+
         $(function () {
             var currentPatientId;
 
@@ -25,13 +32,13 @@
                 if (message) {
                     $.ajax({
                         type: 'POST',
-                        url: '@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "messages").ToString()',
+                        url: '@baseUrl.AppendPathSegment("messages").ToString()',
                         contentType: 'application/json',
                         data: JSON.stringify({
                             patientId: $('#patient_select').val(),
                             text: message
                         })
-                    }).then(function() {
+                    }).then(function () {
                         $('#message_input').val(null);
                     });
                 }
@@ -46,23 +53,24 @@
             }
 
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
+            $.connection.hub.qs = { 'authToken': '@Model.Token' };
 
-            $.connection.chatHub.client.newMessage = function(m) {
+            $.connection.chatHub.client.newMessage = function (m) {
                 addMessage(m);
             };
 
-            $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "patients").ToString()').then(function (data) {
+            $.getJSON('@baseUrl.AppendPathSegment("patients").ToString()').then(function (data) {
                 data.forEach(function (p) {
                     addPatient(p);
                 });
 
                 $.connection.hub.start().done(function () {
-                    $('#patient_select').on('change', function() {
+                    $('#patient_select').on('change', function () {
                         var patientId = $(this).val();
 
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
-                        $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("provider", Model.Id, "chat", "messages").ToString()/' + patientId).then(function (data) {
+                        $.getJSON('@baseUrl.AppendPathSegment("messages").ToString()/' + patientId).then(function (data) {
                             data.forEach(function (m) {
                                 addMessage(m);
                             });
@@ -72,9 +80,9 @@
                         });
                     });
 
-                    $('#message_input').on('keypress', function() {
+                    $('#message_input').on('keypress', function () {
                         var keycode = event.keyCode ? event.keyCode : event.which;
-                        if(keycode == '13'){
+                        if (keycode == '13') {
                             sendMessage();
                         }
                     });

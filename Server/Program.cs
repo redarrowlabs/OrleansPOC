@@ -1,4 +1,6 @@
 using GrainInterfaces;
+using Orleans;
+using Orleans.Runtime.Configuration;
 using System;
 
 namespace Server
@@ -15,19 +17,16 @@ namespace Server
                 AppDomainInitializerArguments = args,
             });
 
-            // Seed Data
-            var orleansConfig = Orleans.Runtime.Configuration.ClientConfiguration.LocalhostSilo();
-            Orleans.GrainClient.Initialize(orleansConfig);
+            var orleansConfig = ClientConfiguration.LocalhostSilo();
+            GrainClient.Initialize(orleansConfig);
 
-            var pt1 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
-            pt1.SetName("Justin Case");
+            var pt1 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
+            var pt2 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(2);
+            var pr1 = GrainClient.GrainFactory.GetGrain<IProviderGrain>(1);
 
-            var pt2 = Orleans.GrainClient.GrainFactory.GetGrain<IPatientGrain>(2);
-            pt2.SetName("Gene Poole");
-
-            var pr1 = Orleans.GrainClient.GrainFactory.GetGrain<IProviderGrain>(1);
-            pr1.SetName("Dr. Snuggles");
-
+            pt1.SetName("Justin Case").Wait();
+            pt2.SetName("Gene Poole").Wait();
+            pr1.SetName("Doctor Snuggles").Wait();
             pr1.AddPatient(pt1).Wait();
             pr1.AddPatient(pt2).Wait();
 

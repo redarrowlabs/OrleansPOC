@@ -2,6 +2,8 @@
 @using Flurl;
 @{
     ViewBag.Title = "Patient Chat";
+
+    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "patient", Model.Id, "chat", "messages").ToString();
 }
 
 <div class="page-header">
@@ -10,14 +12,19 @@
 @Html.Partial("_Chat")
 
 @section Scripts {
+    <script src="@Model.ApiBaseUrl.AppendPathSegments("signalr", "hubs")"></script>
     <script>
+        $(document).ajaxSend(function (event, request) {
+            request.setRequestHeader('Authorization', 'Bearer @Model.Token');
+        });
+
         $(function () {
             function sendMessage() {
                 var message = $('#message_input').val();
                 if (message) {
                     $.ajax({
                         type: 'POST',
-                        url: '@Model.ApiBaseUrl.AppendPathSegments("patient", Model.Id, "chat", "messages").ToString()',
+                        url: '@baseUrl',
                         contentType: 'application/json',
                         data: JSON.stringify({
                             text: message
@@ -33,12 +40,13 @@
             }
 
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
+            $.connection.hub.qs = { 'authToken': '@Model.Token' };
 
             $.connection.chatHub.client.newMessage = function (m) {
                 addMessage(m);
             };
 
-            $.getJSON('@Model.ApiBaseUrl.AppendPathSegments("patient", Model.Id, "chat", "messages").ToString()').then(function (data) {
+            $.getJSON('@baseUrl').then(function (data) {
                 data.forEach(function (m) {
                     addMessage(m);
                 });

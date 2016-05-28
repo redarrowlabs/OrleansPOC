@@ -19,14 +19,23 @@ namespace Grains
 
         public override async Task OnActivateAsync()
         {
-            _name = "Provider " + this.GetPrimaryKeyLong();
             _patients = new Dictionary<long, IPatientGrain>();
 
-            _hubConnection = new HubConnection("http://localhost:8090");
+            _hubConnection = new HubConnection("https://localhost:44302");
             _hub = _hubConnection.CreateHubProxy("ChatHub");
             await _hubConnection.Start();
 
             await base.OnActivateAsync();
+        }
+
+        public override Task OnDeactivateAsync()
+        {
+            if (_hubConnection != null)
+            {
+                _hubConnection.Dispose();
+            }
+
+            return base.OnDeactivateAsync();
         }
 
         public Task<string> GetName()
@@ -43,8 +52,11 @@ namespace Grains
 
         public async Task AddPatient(IPatientGrain patient)
         {
-            _patients.Add(patient.GetPrimaryKeyLong(), patient);
-            await patient.SyncProvider(this);
+            if (!_patients.ContainsKey(patient.GetPrimaryKeyLong()))
+            {
+                _patients.Add(patient.GetPrimaryKeyLong(), patient);
+                await patient.SyncProvider(this);
+            }
         }
 
         public async Task<IEnumerable<Patient>> CurrentPatients()
@@ -68,7 +80,7 @@ namespace Grains
             return messages.OrderBy(x => x.Received).ToList();
         }
 
-        public Task SendMessage(long patientId, string message)
+        public async Task SendMessage(long patientId, string message)
         {
             var cm = new ChatMessage
             {
@@ -77,14 +89,12 @@ namespace Grains
                 Text = message
             };
 
-            _patients[patientId].AddMessage(cm);
+            await _patients[patientId].AddMessage(cm);
 
             if (_hubConnection.State == ConnectionState.Connected)
             {
-                _hub.Invoke("SendMessage", patientId, cm);
+                await _hub.Invoke("SendMessage", patientId, cm);
             }
-
-            return TaskDone.Done;
         }
     }
 }

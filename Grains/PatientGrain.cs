@@ -20,14 +20,23 @@ namespace Grains
 
         public override async Task OnActivateAsync()
         {
-            _name = "Patient " + this.GetPrimaryKeyLong();
             _messages = new List<ChatMessage>();
 
-            _hubConnection = new HubConnection("http://localhost:8090");
+            _hubConnection = new HubConnection("https://localhost:44302");
             _hub = _hubConnection.CreateHubProxy("ChatHub");
             await _hubConnection.Start();
 
             await base.OnActivateAsync();
+        }
+
+        public override Task OnDeactivateAsync()
+        {
+            if (_hubConnection != null)
+            {
+                _hubConnection.Dispose();
+            }
+
+            return base.OnDeactivateAsync();
         }
 
         public Task<string> GetName()
@@ -61,7 +70,7 @@ namespace Grains
             return TaskDone.Done;
         }
 
-        public Task SendMessage(string message)
+        public async Task SendMessage(string message)
         {
             var cm = new ChatMessage
             {
@@ -74,10 +83,8 @@ namespace Grains
 
             if (_hubConnection.State == ConnectionState.Connected)
             {
-                _hub.Invoke("SendMessage", this.GetPrimaryKeyLong(), cm);
+                await _hub.Invoke("SendMessage", this.GetPrimaryKeyLong(), cm);
             }
-
-            return TaskDone.Done;
         }
     }
 }

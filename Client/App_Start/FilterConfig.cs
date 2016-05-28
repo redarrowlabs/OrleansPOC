@@ -9,6 +9,7 @@ namespace Client
         {
             filters.Add(new HandleErrorAttribute());
             filters.Add(new JsonNetAttribute());
+            filters.Add(new AuthorizeAttribute());
         }
     }
 }
