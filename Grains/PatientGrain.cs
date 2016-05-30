@@ -1,8 +1,6 @@
 using Common;
 using GrainInterfaces;
-using Microsoft.AspNet.SignalR.Client;
 using Orleans;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,9 +9,6 @@ namespace Grains
 {
     public class PatientGrain : Grain, IPatientGrain
     {
-        private HubConnection _hubConnection;
-        private IHubProxy _hub;
-
         private string _name;
         private IProviderGrain _provider;
         private List<ChatMessage> _messages;
@@ -22,21 +17,7 @@ namespace Grains
         {
             _messages = new List<ChatMessage>();
 
-            _hubConnection = new HubConnection("https://localhost:44302");
-            _hub = _hubConnection.CreateHubProxy("ChatHub");
-            await _hubConnection.Start();
-
             await base.OnActivateAsync();
-        }
-
-        public override Task OnDeactivateAsync()
-        {
-            if (_hubConnection != null)
-            {
-                _hubConnection.Dispose();
-            }
-
-            return base.OnDeactivateAsync();
         }
 
         public Task<string> GetName()
@@ -68,23 +49,6 @@ namespace Grains
             _messages.Add(message);
 
             return TaskDone.Done;
-        }
-
-        public async Task SendMessage(string message)
-        {
-            var cm = new ChatMessage
-            {
-                Name = _name,
-                Received = DateTime.UtcNow,
-                Text = message
-            };
-
-            _messages.Add(cm);
-
-            if (_hubConnection.State == ConnectionState.Connected)
-            {
-                await _hub.Invoke("SendMessage", this.GetPrimaryKeyLong(), cm);
-            }
         }
     }
 }

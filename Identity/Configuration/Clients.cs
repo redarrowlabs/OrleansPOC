@@ -20,7 +20,6 @@ namespace Identity.Configuration
                     },
                     AllowedScopes = new List<string>
                     {
-                        "openid",
                         "api"
                     }
                 },

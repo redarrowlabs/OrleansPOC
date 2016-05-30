@@ -11,7 +11,5 @@ namespace GrainInterfaces
         Task<IEnumerable<ChatMessage>> Messages();
 
         Task AddMessage(ChatMessage message);
-
-        Task SendMessage(string message);
     }
 }

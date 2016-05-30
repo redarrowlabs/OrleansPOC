@@ -11,7 +11,5 @@ namespace GrainInterfaces
         Task AddPatient(IPatientGrain patient);
 
         Task<IEnumerable<ChatMessage>> Messages(long patientId);
-
-        Task SendMessage(long patientId, string message);
     }
 }

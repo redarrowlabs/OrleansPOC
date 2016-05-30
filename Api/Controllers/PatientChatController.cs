@@ -1,9 +1,7 @@
-﻿using Api.Models;
-using Common;
+﻿using Common;
 using GrainInterfaces;
 using Orleans;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -17,6 +15,7 @@ namespace Api.Controllers
         public async Task<Patient> Name(long id)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
+            var name = await patient.GetName();
 
             return new Patient
             {
@@ -32,16 +31,6 @@ namespace Api.Controllers
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
 
             return patient.Messages();
-        }
-
-        [HttpPost]
-        [Route("messages")]
-        public async Task<IHttpActionResult> SendMessage(long id, PatientChatRequest request)
-        {
-            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
-            await patient.SendMessage(request.Text);
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
     }
 }

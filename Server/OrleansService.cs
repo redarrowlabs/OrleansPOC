@@ -22,7 +22,7 @@ namespace Server
 
         public bool Stop()
         {
-            _host.StopOrleansSilo();
+            _host.ShutdownOrleansSilo();
             return true;
         }
 

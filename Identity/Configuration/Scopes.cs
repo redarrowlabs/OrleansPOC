@@ -28,6 +28,9 @@ namespace Identity.Configuration
                     Name = "api",
                     Claims = new List<ScopeClaim>
                     {
+                        new ScopeClaim(Constants.ClaimTypes.GivenName),
+                        new ScopeClaim(Constants.ClaimTypes.FamilyName),
+                        new ScopeClaim(Constants.ClaimTypes.Email),
                         new ScopeClaim(Constants.ClaimTypes.Role)
                     }
                 }

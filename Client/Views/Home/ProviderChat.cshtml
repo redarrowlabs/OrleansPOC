@@ -28,17 +28,10 @@
             var currentPatientId;
 
             function sendMessage() {
+                var patientId = $('#patient_select').val();
                 var message = $('#message_input').val();
-                if (message) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '@baseUrl.AppendPathSegment("messages").ToString()',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            patientId: $('#patient_select').val(),
-                            text: message
-                        })
-                    }).then(function () {
+                if (patientId && message) {
+                    $.connection.chatHub.server.sendMessage(patientId, message).then(function () {
                         $('#message_input').val(null);
                     });
                 }

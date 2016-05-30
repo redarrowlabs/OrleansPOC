@@ -22,14 +22,7 @@
             function sendMessage() {
                 var message = $('#message_input').val();
                 if (message) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '@baseUrl',
-                        contentType: 'application/json',
-                        data: JSON.stringify({
-                            text: message
-                        })
-                    }).then(function () {
+                    $.connection.chatHub.server.sendMessage(@Model.Id, message).then(function () {
                         $('#message_input').val(null);
                     });
                 }

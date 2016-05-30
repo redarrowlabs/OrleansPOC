@@ -20,7 +20,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{94A5A972-CDB7-4CCB-9472-9D1D17FECE35}"
 	ProjectSection(SolutionItems) = preProject
 		Setup\localhost.pfx = Setup\localhost.pfx
-		Setup\orleans.sql = Setup\orleans.sql
 		Setup\readme.md = Setup\readme.md
 	EndProjectSection
 EndProject

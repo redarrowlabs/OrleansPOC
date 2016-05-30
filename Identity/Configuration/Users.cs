@@ -47,6 +47,7 @@ namespace Identity.Configuration
                         new Claim(Constants.ClaimTypes.GivenName, "Doctor"),
                         new Claim(Constants.ClaimTypes.FamilyName, "Snuggles"),
                         new Claim(Constants.ClaimTypes.Email, "dsnuggles@example.com"),
+                        new Claim(Constants.ClaimTypes.Role, "admin"),
                         new Claim(Constants.ClaimTypes.Role, "provider")
                     }
                 }

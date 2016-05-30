@@ -1,8 +1,9 @@
 ﻿<ClientConfiguration xmlns="urn:orleans">
   <Gateway Address="localhost" Port="40000"/>
   <!--<SystemStore
-    SystemStoreType ="SqlServer"
+    SystemStoreType="SqlServer"
     DeploymentId="OrleansPOC"
     DataConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Orleans;Integrated Security=True;Pooling=False;Max Pool Size=200;Asynchronous Processing=True;MultipleActiveResultSets=True"
     AdoInvariant="System.Data.SqlClient" />-->
+  <Tracing DefaultTraceLevel="Info" TraceToConsole="True" />
 </ClientConfiguration>

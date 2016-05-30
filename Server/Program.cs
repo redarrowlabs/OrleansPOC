@@ -14,7 +14,7 @@ namespace Server
             {
                 hostConfig.RunAsPrompt();
                 hostConfig.StartAutomatically();
-                hostConfig.SetServiceName("OrleansPOCiloHost");
+                hostConfig.SetServiceName("OrleansPOCSiloHost");
                 hostConfig.SetDisplayName("Orleans POC Silo Host");
 
                 hostConfig.Service<OrleansService>(serviceConfig =>
