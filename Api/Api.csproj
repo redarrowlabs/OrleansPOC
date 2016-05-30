@@ -172,6 +172,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ClientConfiguration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -181,6 +184,7 @@
     <Compile Include="Infrastructure\QueryStringOAuthTokenProvider.cs" />
     <Compile Include="Infrastructure\SignalRContractResolver.cs" />
     <Compile Include="Infrastructure\SignalRUserIdProvider.cs" />
+    <Compile Include="Infrastructure\OrleansExtensions.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\ProviderChatController.cs" />
     <Compile Include="Controllers\PatientChatController.cs" />

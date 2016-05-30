@@ -5,8 +5,6 @@ using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Orleans;
-using Orleans.Runtime.Configuration;
 using Owin;
 using System.Web.Http;
 
@@ -18,6 +16,8 @@ namespace Api
     {
         public void Configuration(IAppBuilder app)
         {
+            app.UseOrleans();
+
             app.Map("/signalr", builder =>
             {
                 var settings = new JsonSerializerSettings { ContractResolver = new SignalRContractResolver() };
@@ -69,9 +69,6 @@ namespace Api
 
                 builder.UseWebApi(httpConfiguration);
             });
-
-            var orleansConfig = ClientConfiguration.LocalhostSilo();
-            GrainClient.Initialize(orleansConfig);
         }
     }
 }
