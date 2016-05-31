@@ -205,8 +205,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\ProviderChatController.cs" />
     <Compile Include="Controllers\PatientChatController.cs" />
-    <Compile Include="Models\ProviderChatRequest.cs" />
-    <Compile Include="Models\PatientChatRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

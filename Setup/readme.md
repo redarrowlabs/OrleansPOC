@@ -1,8 +1,6 @@
 ## Environment
 
 - Install the 'localhost' certificate into the 'Trusted Root Certification Authorities' store of the 'Local Computer' store location (private key password: Testing123)
-<!--- Create LocalDB database called 'Orleans'
-- Run Orleans SQL script against the created database (located in packages\Microsoft.Orleans.OrleansSqlUtils.1.2.1\lib\net451\SQLServer)--> 
 
 ## URLs
 

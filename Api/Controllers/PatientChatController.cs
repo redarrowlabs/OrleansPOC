@@ -15,7 +15,6 @@ namespace Api.Controllers
         public async Task<Patient> Name(long id)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
-            var name = await patient.GetName();
 
             return new Patient
             {
