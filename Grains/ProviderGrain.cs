@@ -10,9 +10,6 @@ namespace Grains
 {
     public class ProviderGrain : Grain, IProviderGrain
     {
-        private HubConnection _hubConnection;
-        private IHubProxy _hub;
-
         private string _name;
         private Dictionary<long, IPatientGrain> _patients;
 
