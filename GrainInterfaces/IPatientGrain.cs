@@ -6,7 +6,7 @@ namespace GrainInterfaces
 {
     public interface IPatientGrain : IEntityGrain
     {
-        Task SyncProvider(IProviderGrain provider);
+        Task SetProvider(long providerId);
 
         Task<IEnumerable<ChatMessage>> Messages();
 

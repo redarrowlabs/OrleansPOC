@@ -56,9 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PatientGrain.cs" />
+    <Compile Include="State\PatientState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\orleans.codegen.cs" />
     <Compile Include="ProviderGrain.cs" />
+    <Compile Include="State\ProviderState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

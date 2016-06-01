@@ -1,44 +1,52 @@
 using Common;
 using GrainInterfaces;
-using Microsoft.AspNet.SignalR.Client;
+using Grains.State;
 using Orleans;
+using Orleans.Providers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Grains
 {
-    public class ProviderGrain : Grain, IProviderGrain
+    [StorageProvider(ProviderName = "JsonStore")]
+    public class ProviderGrain : Grain<ProviderState>, IProviderGrain
     {
-        private string _name;
         private Dictionary<long, IPatientGrain> _patients;
 
-        public override async Task OnActivateAsync()
+        public override Task OnActivateAsync()
         {
-            _patients = new Dictionary<long, IPatientGrain>();
+            _patients = State.Patients
+                .Select(x => GrainFactory.GetGrain<IPatientGrain>(x))
+                .ToDictionary(x => x.GetPrimaryKeyLong());
 
-            await base.OnActivateAsync();
+            return base.OnActivateAsync();
         }
 
         public Task<string> GetName()
         {
-            return Task.FromResult(_name);
+            return Task.FromResult(State.Name);
         }
 
         public Task SetName(string name)
         {
-            _name = name;
+            State.Name = name;
 
-            return TaskDone.Done;
+            return base.WriteStateAsync();
         }
 
         public async Task AddPatient(IPatientGrain patient)
         {
-            if (!_patients.ContainsKey(patient.GetPrimaryKeyLong()))
+            var patientId = patient.GetPrimaryKeyLong();
+            if (!_patients.ContainsKey(patientId))
             {
-                _patients.Add(patient.GetPrimaryKeyLong(), patient);
-                await patient.SyncProvider(this);
+                _patients.Add(patientId, patient);
+                await patient.SetProvider(this.GetPrimaryKeyLong());
             }
+
+            State.Patients.Add(patientId);
+
+            await base.WriteStateAsync();
         }
 
         public async Task<IEnumerable<Patient>> CurrentPatients()

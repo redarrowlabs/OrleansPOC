@@ -127,6 +127,10 @@
       <Project>{8911de29-a60a-4d5c-8d3e-cf567ed1e2a2}</Project>
       <Name>Grains</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Storage\Storage.csproj">
+      <Project>{9bb23dae-f7f0-45d9-b177-9c4d7ed5e655}</Project>
+      <Name>Storage</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />

@@ -1,54 +1,59 @@
 using Common;
 using GrainInterfaces;
+using Grains.State;
 using Orleans;
+using Orleans.Providers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Grains
 {
-    public class PatientGrain : Grain, IPatientGrain
+    [StorageProvider(ProviderName = "JsonStore")]
+    public class PatientGrain : Grain<PatientState>, IPatientGrain
     {
-        private string _name;
         private IProviderGrain _provider;
-        private List<ChatMessage> _messages;
 
-        public override async Task OnActivateAsync()
+        public override Task OnActivateAsync()
         {
-            _messages = new List<ChatMessage>();
+            if (State.ProviderId.HasValue)
+            {
+                _provider = GrainFactory.GetGrain<IProviderGrain>(State.ProviderId.Value);
+            }
 
-            await base.OnActivateAsync();
+            return base.OnActivateAsync();
         }
 
         public Task<string> GetName()
         {
-            return Task.FromResult(_name);
+            return Task.FromResult(State.Name);
         }
 
         public Task SetName(string name)
         {
-            _name = name;
+            State.Name = name;
 
-            return TaskDone.Done;
+            return base.WriteStateAsync();
         }
 
-        public Task SyncProvider(IProviderGrain provider)
+        public Task SetProvider(long providerId)
         {
-            _provider = provider;
+            State.ProviderId = providerId;
+            _provider = GrainFactory.GetGrain<IProviderGrain>(State.ProviderId.Value);
 
-            return TaskDone.Done;
+            return base.WriteStateAsync();
         }
 
         public Task<IEnumerable<ChatMessage>> Messages()
         {
-            return Task.FromResult(_messages.AsEnumerable());
+            return Task.FromResult(State.Messages.AsEnumerable());
         }
 
         public Task AddMessage(ChatMessage message)
         {
-            _messages.Add(message);
+            State.Messages.Add(message);
 
-            return TaskDone.Done;
+            return base.WriteStateAsync();
         }
     }
 }
