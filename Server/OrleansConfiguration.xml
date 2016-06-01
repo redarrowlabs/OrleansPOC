@@ -4,6 +4,9 @@
     <StorageProviders>
       <Provider Type="Storage.JsonStorage" Name="JsonStore" />
     </StorageProviders>
+    <BootstrapProviders>
+      <Provider Type="OrleansDashboard.Dashboard" Name="Dashboard" />
+    </BootstrapProviders>
     <!--<SystemStore
       SystemStoreType="SqlServer"
       DeploymentId="OrleansPOC"
