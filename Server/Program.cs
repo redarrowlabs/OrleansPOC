@@ -36,9 +36,9 @@ namespace Server
                 var orleansConfig = ClientConfiguration.LocalhostSilo();
                 GrainClient.Initialize(orleansConfig);
 
-                var pt1 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(1);
-                var pt2 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(2);
-                var pr1 = GrainClient.GrainFactory.GetGrain<IProviderGrain>(1);
+                var pt1 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(Guid.Parse("00000000-0000-0000-0000-000000000001"));
+                var pt2 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(Guid.Parse("00000000-0000-0000-0000-000000000002"));
+                var pr1 = GrainClient.GrainFactory.GetGrain<IProviderGrain>(Guid.Parse("00000000-0000-0000-0000-000000000003"));
 
                 pt1.SetName("Justin Case").Wait();
                 pt2.SetName("Gene Poole").Wait();

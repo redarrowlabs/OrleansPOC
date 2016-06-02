@@ -1,8 +1,10 @@
-﻿namespace Client.ViewModels
+﻿using System;
+
+namespace Client.ViewModels
 {
     public class ChatViewModel : BaseViewModel
     {
-        public long Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 

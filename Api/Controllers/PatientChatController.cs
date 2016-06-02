@@ -1,18 +1,19 @@
 ﻿using Common;
 using GrainInterfaces;
 using Orleans;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Api.Controllers
 {
-    [RoutePrefix("patient/{id:long}/chat")]
+    [RoutePrefix("patient/{id:Guid}/chat")]
     public class PatientChatController : ApiController
     {
         [HttpGet]
         [Route("name")]
-        public async Task<Patient> Name(long id)
+        public async Task<Patient> Name(Guid id)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
 
@@ -25,7 +26,7 @@ namespace Api.Controllers
 
         [HttpGet]
         [Route("messages")]
-        public Task<IEnumerable<ChatMessage>> Messages(long id)
+        public Task<IEnumerable<ChatMessage>> Messages(Guid id)
         {
             var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
 

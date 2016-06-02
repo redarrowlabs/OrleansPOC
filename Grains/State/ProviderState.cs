@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Grains.State
 {
@@ -6,11 +7,11 @@ namespace Grains.State
     {
         public ProviderState()
         {
-            Patients = new List<long>();
+            Patients = new List<Guid>();
         }
 
         public string Name { get; set; }
 
-        public List<long> Patients { get; set; }
+        public List<Guid> Patients { get; set; }
     }
 }

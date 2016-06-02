@@ -3,6 +3,7 @@ using GrainInterfaces;
 using Grains.State;
 using Orleans;
 using Orleans.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace Grains
             return base.WriteStateAsync();
         }
 
-        public Task SetProvider(long providerId)
+        public Task SetProvider(Guid providerId)
         {
             State.ProviderId = providerId;
             _provider = GrainFactory.GetGrain<IProviderGrain>(State.ProviderId.Value);

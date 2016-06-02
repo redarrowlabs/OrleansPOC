@@ -1,4 +1,5 @@
 ﻿using Common;
+using System;
 using System.Collections.Generic;
 
 namespace Grains.State
@@ -10,7 +11,7 @@ namespace Grains.State
             Messages = new List<ChatMessage>();
         }
 
-        public long? ProviderId { get; set; }
+        public Guid? ProviderId { get; set; }
 
         public string Name { get; set; }
 

@@ -11,17 +11,17 @@ namespace Client.Hubs
     [Authorize]
     public class ChatHub : Hub
     {
-        public Task Join(long id)
+        public Task Join(Guid id)
         {
             return Groups.Add(Context.ConnectionId, id.ToString());
         }
 
-        public Task Leave(long id)
+        public Task Leave(Guid id)
         {
             return Groups.Remove(Context.ConnectionId, id.ToString());
         }
 
-        public async Task SendMessage(long id, string text)
+        public async Task SendMessage(Guid id, string text)
         {
             var message = new ChatMessage
             {

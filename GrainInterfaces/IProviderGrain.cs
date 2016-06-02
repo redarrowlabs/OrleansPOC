@@ -1,4 +1,5 @@
 using Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,6 +11,6 @@ namespace GrainInterfaces
 
         Task AddPatient(IPatientGrain patient);
 
-        Task<IEnumerable<ChatMessage>> Messages(long patientId);
+        Task<IEnumerable<ChatMessage>> Messages(Guid patientId);
     }
 }

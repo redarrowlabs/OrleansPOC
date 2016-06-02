@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace GrainInterfaces
 {
-    public interface IEntityGrain : IGrainWithIntegerKey
+    public interface IEntityGrain : IGrainWithGuidKey
     {
         Task<string> GetName();
 

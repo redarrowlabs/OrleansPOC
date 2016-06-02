@@ -22,7 +22,7 @@
             function sendMessage() {
                 var message = $('#message_input').val();
                 if (message) {
-                    $.connection.chatHub.server.sendMessage(@Model.Id, message).then(function () {
+                    $.connection.chatHub.server.sendMessage('@Model.Id', message).then(function () {
                         $('#message_input').val(null);
                     });
                 }
@@ -45,7 +45,7 @@
                 });
 
                 $.connection.hub.start().done(function () {
-                    $.connection.chatHub.server.join(@Model.Id);
+                    $.connection.chatHub.server.join('@Model.Id');
 
                     $('#message_input').on('keypress', function () {
                         var keycode = event.keyCode ? event.keyCode : event.which;

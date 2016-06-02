@@ -3,6 +3,7 @@ using GrainInterfaces;
 using Grains.State;
 using Orleans;
 using Orleans.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,13 +13,13 @@ namespace Grains
     [StorageProvider(ProviderName = "JsonStore")]
     public class ProviderGrain : Grain<ProviderState>, IProviderGrain
     {
-        private Dictionary<long, IPatientGrain> _patients;
+        private Dictionary<Guid, IPatientGrain> _patients;
 
         public override Task OnActivateAsync()
         {
             _patients = State.Patients
                 .Select(x => GrainFactory.GetGrain<IPatientGrain>(x))
-                .ToDictionary(x => x.GetPrimaryKeyLong());
+                .ToDictionary(x => x.GetPrimaryKey());
 
             return base.OnActivateAsync();
         }
@@ -37,11 +38,11 @@ namespace Grains
 
         public async Task AddPatient(IPatientGrain patient)
         {
-            var patientId = patient.GetPrimaryKeyLong();
+            var patientId = patient.GetPrimaryKey();
             if (!_patients.ContainsKey(patientId))
             {
                 _patients.Add(patientId, patient);
-                await patient.SetProvider(this.GetPrimaryKeyLong());
+                await patient.SetProvider(this.GetPrimaryKey());
             }
 
             State.Patients.Add(patientId);
@@ -56,14 +57,14 @@ namespace Grains
                     .Select(async x =>
                         new Patient
                         {
-                            Id = x.GetPrimaryKeyLong(),
+                            Id = x.GetPrimaryKey(),
                             Name = await x.GetName()
                         }
                     )
             );
         }
 
-        public async Task<IEnumerable<ChatMessage>> Messages(long patientId)
+        public async Task<IEnumerable<ChatMessage>> Messages(Guid patientId)
         {
             var messages = await _patients[patientId].Messages();
 
