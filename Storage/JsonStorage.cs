@@ -12,6 +12,8 @@ namespace Storage
 {
     public class JsonStorage : IStorageProvider
     {
+        private const string DATA_PATH = "Path";
+
         private string _baseFilePath;
 
         public Logger Log { get; private set; }
@@ -23,9 +25,16 @@ namespace Storage
             Name = name;
             Log = providerRuntime.GetLogger($"StorageProvider.Json.{providerRuntime.ServiceId}");
 
-            var codeBaseUri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-            var filePath = Path.GetDirectoryName(Uri.UnescapeDataString(codeBaseUri.Path));
-            _baseFilePath = Path.Combine(filePath, "Data");
+            if (!config.Properties.ContainsKey(DATA_PATH) || String.IsNullOrWhiteSpace(config.Properties[DATA_PATH]))
+            {
+                var codeBaseUri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
+                var filePath = Path.GetDirectoryName(Uri.UnescapeDataString(codeBaseUri.Path));
+                _baseFilePath = Path.Combine(filePath, "Data");
+            }
+            else
+            {
+                _baseFilePath = config.Properties[DATA_PATH];
+            }
 
             if (!Directory.Exists(_baseFilePath))
             {
@@ -41,7 +50,7 @@ namespace Storage
             var filePath = Path.Combine(_baseFilePath, $"{grainType}-{key}.json");
             if (File.Exists(filePath))
             {
-                var json = File.ReadAllText(Path.Combine(_baseFilePath, $"{key}.json"));
+                var json = File.ReadAllText(Path.Combine(_baseFilePath, $"{grainType}-{key}.json"));
                 grainState.State = JsonConvert.DeserializeObject(json, grainState.State.GetType());
             }
 
