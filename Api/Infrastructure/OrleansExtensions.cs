@@ -10,7 +10,7 @@ public static class OrleansMiddleware
     {
         var codeBaseUri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
         var path = Path.GetDirectoryName(Uri.UnescapeDataString(codeBaseUri.Path));
-        var configFilePath = Path.Combine(path, "ClientConfiguration.xml");
+        var configFilePath = Path.Combine(path, "OrleansConfiguration.xml");
         var configFile = new FileInfo(configFilePath);
         if (!configFile.Exists)
         {

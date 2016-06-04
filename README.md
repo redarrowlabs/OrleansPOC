@@ -1,6 +1,9 @@
-## Environment
+## Setup
 
-- Install the 'localhost' certificate into the 'Trusted Root Certification Authorities' store of the 'Local Computer' store location (private key password: Testing123)
+1. Install [SQL Server 2016 Express](https://download.microsoft.com/download/9/A/E/9AE09369-C53D-4FB7-985B-5CF0D547AE9F/SQLServer2016-SSEI-Expr.exe)
+2. Restore NuGet packages for the solution
+3. Open Powershell prompt as Administrator
+4. Run 'setup.ps1' script (located in the 'Setup' folder)
 
 ## URLs
 

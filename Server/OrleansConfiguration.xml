@@ -1,21 +1,20 @@
 ﻿<OrleansConfiguration xmlns="urn:orleans">
   <Globals>
-    <SeedNode Address="localhost" Port="22222" />
     <StorageProviders>
       <Provider Type="Storage.JsonStorage" Name="JsonStore" Path="C:\Users\Matt\Desktop\JsonData" />
     </StorageProviders>
     <BootstrapProviders>
       <Provider Type="OrleansDashboard.Dashboard" Name="Dashboard" />
     </BootstrapProviders>
-    <!--<SystemStore
+    <SystemStore
       SystemStoreType="SqlServer"
       DeploymentId="OrleansPOC"
-      DataConnectionString="Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Orleans;Integrated Security=True;Pooling=False;Max Pool Size=200;Asynchronous Processing=True;MultipleActiveResultSets=True"
-      AdoInvariant="System.Data.SqlClient" />-->
+      DataConnectionString="Data Source=localhost\SQLEXPRESS;Initial Catalog=Orleans;Integrated Security=True;Pooling=False;Max Pool Size=200;Asynchronous Processing=True;MultipleActiveResultSets=True"
+      AdoInvariant="System.Data.SqlClient" />
   </Globals>
   <Defaults>
     <Networking Address="localhost" Port="22222" />
     <ProxyingGateway Address="localhost" Port="40000" />
-    <Tracing DefaultTraceLevel="Info" TraceToConsole="True" />
+    <Tracing DefaultTraceLevel="Info" TraceToConsole="True" TraceToFile="" />
   </Defaults>
 </OrleansConfiguration>

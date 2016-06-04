@@ -188,7 +188,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ClientConfiguration.xml">
+    <Content Include="OrleansConfiguration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Web.config">

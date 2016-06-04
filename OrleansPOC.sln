@@ -17,13 +17,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity", "Identity\Identity.csproj", "{0D3B24E0-CFC5-4BBB-99EC-A4813F3B74FC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{94A5A972-CDB7-4CCB-9472-9D1D17FECE35}"
-	ProjectSection(SolutionItems) = preProject
-		Setup\localhost.pfx = Setup\localhost.pfx
-		Setup\readme.md = Setup\readme.md
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage", "Storage\Storage.csproj", "{9BB23DAE-F7F0-45D9-B177-9C4D7ED5E655}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EC8DF744-C9BC-4E9D-88DA-0C954F67D720}"
+	ProjectSection(SolutionItems) = preProject
+		localhost.pfx = localhost.pfx
+		README.md = README.md
+		setup.ps1 = setup.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
