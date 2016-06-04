@@ -133,6 +133,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="ClientConfiguration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="OrleansConfiguration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

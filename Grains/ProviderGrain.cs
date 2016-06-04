@@ -43,11 +43,10 @@ namespace Grains
             {
                 _patients.Add(patientId, patient);
                 await patient.SetProvider(this.GetPrimaryKey());
+
+                State.Patients.Add(patientId);
+                await base.WriteStateAsync();
             }
-
-            State.Patients.Add(patientId);
-
-            await base.WriteStateAsync();
         }
 
         public async Task<IEnumerable<Patient>> CurrentPatients()

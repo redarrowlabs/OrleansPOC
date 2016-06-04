@@ -33,7 +33,7 @@ namespace Server
             var sdd = AppDomain.CreateDomain("SeedData");
             sdd.DoCallBack(() =>
             {
-                var orleansConfig = ClientConfiguration.LocalhostSilo();
+                var orleansConfig = ClientConfiguration.StandardLoad();
                 GrainClient.Initialize(orleansConfig);
 
                 var pt1 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(Guid.Parse("00000000-0000-0000-0000-000000000001"));
