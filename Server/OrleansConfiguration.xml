@@ -1,7 +1,7 @@
 ﻿<OrleansConfiguration xmlns="urn:orleans">
   <Globals>
     <StorageProviders>
-      <Provider Type="Storage.JsonStorage" Name="JsonStore" Path="C:\Users\Matt\Desktop\JsonData" />
+      <Provider Type="Storage.JsonStorage" Name="JsonStore" />
     </StorageProviders>
     <BootstrapProviders>
       <Provider Type="OrleansDashboard.Dashboard" Name="Dashboard" />
