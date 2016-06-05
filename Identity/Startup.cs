@@ -27,9 +27,12 @@ namespace Identity
             var options = new IdentityServerOptions
             {
                 SigningCertificate = new X509Certificate2(Resources.IdentityCertificate, "Testing123"),
-                Factory = factory
+                Factory = factory,
+                EnableWelcomePage = false,
+                SiteName = "OrleansPOC"
             };
 
+            app.UseHsts();
             app.UseIdentityServer(options);
         }
     }

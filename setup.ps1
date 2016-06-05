@@ -2,7 +2,7 @@ Import-Module "sqlps" -DisableNameChecking
 Import-Module WebAdministration
 sleep 2
 
-Function Create-Ssl-Site
+Function Create-SslSite
 {
 	Param([string]$Name, [int]$Port, [string]$AppPool, [string]$Cert)
 
@@ -30,9 +30,9 @@ $appPool = New-WebAppPool $appPoolName
 $appPool.managedRuntimeVersion = "v4.0"
 $appPool | Set-Item
 
-Create-Ssl-Site -Name "Client" -Port 44300 -AppPool $appPoolName -Cert $pfxStorePath
-Create-Ssl-Site -Name "Identity" -Port 44301 -AppPool $appPoolName -Cert $pfxStorePath
-Create-Ssl-Site -Name "Api" -Port 44302 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Client" -Port 44300 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Identity" -Port 44301 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Api" -Port 44302 -AppPool $appPoolName -Cert $pfxStorePath
 
 $orleansScriptPath = Resolve-Path ".\packages\Microsoft.Orleans.OrleansSqlUtils.1.2.1\lib\net451\SQLServer\CreateOrleansTables_SqlServer.sql"
 $sqlInstanceName = $env:COMPUTERNAME + "\SQLEXPRESS"
