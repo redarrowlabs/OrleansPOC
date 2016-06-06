@@ -1,7 +1,7 @@
 ## Setup
 
 1. Install [SQL Server 2016 Express](https://download.microsoft.com/download/9/A/E/9AE09369-C53D-4FB7-985B-5CF0D547AE9F/SQLServer2016-SSEI-Expr.exe)
-2. Restore NuGet packages for the solution
+    - If using something other than a default install of SQL Server Express, you will need to modify the script to point to your target SQL instance
 3. Open Powershell prompt as Administrator
 4. Run 'setup.ps1' script
 

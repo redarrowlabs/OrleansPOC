@@ -1,5 +1,5 @@
-Import-Module "sqlps" -DisableNameChecking
 Import-Module WebAdministration
+Import-Module "sqlps" -DisableNameChecking
 sleep 2
 
 Function Create-SslSite
@@ -16,6 +16,14 @@ Function Create-SslSite
 	Write-Host "Creating SSL binding for site $Name" -ForegroundColor Green
 	Get-Item $Cert | New-Item -Path $bindingPath -Force
 }
+
+Write-Host "Cleaning and building solution" -ForegroundColor Green
+$msbuild = "& 'C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe'"
+$buildOptions = "/noconsolelogger /p:Configuration=Debug"
+$clean = $msbuild + " ""OrleansPOC.sln"" " + $options + " /t:Clean"
+$build = $msbuild + " ""OrleansPOC.sln"" " + $options + " /t:Build"
+Invoke-Expression $clean
+Invoke-Expression $build
 
 Write-Host "Importing certificate" -ForegroundColor Green
 $certPath = Resolve-Path ".\localhost.pfx"
