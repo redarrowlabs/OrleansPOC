@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 
 namespace Client.Hubs
 {
-    [Authorize]
+    [AuthorizeUser]
     public class ChatHub : Hub
     {
-        public Task Join(Guid id)
+        public Task Join(Guid groupId)
         {
-            return Groups.Add(Context.ConnectionId, id.ToString());
+            return Groups.Add(Context.ConnectionId, groupId.ToString());
         }
 
-        public Task Leave(Guid id)
+        public Task Leave(Guid groupId)
         {
-            return Groups.Remove(Context.ConnectionId, id.ToString());
+            return Groups.Remove(Context.ConnectionId, groupId.ToString());
         }
 
-        public async Task SendMessage(Guid id, string text)
+        public async Task SendMessage(Guid groupId, string text)
         {
             var message = new ChatMessage
             {
@@ -30,10 +30,10 @@ namespace Client.Hubs
                 Text = text
             };
 
-            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(id);
+            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(groupId);
             await patient.AddMessage(message);
 
-            Clients.Group(id.ToString()).newMessage(message);
+            Clients.Group(groupId.ToString()).newMessage(message);
         }
     }
 }

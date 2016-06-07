@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hubs\ChatHub.cs" />
+    <Compile Include="Infrastructure\AuthorizeUserAttribute.cs" />
     <Compile Include="Infrastructure\IPrincipalExtensions.cs" />
     <Compile Include="Infrastructure\QueryStringOAuthTokenProvider.cs" />
     <Compile Include="Infrastructure\SignalRContractResolver.cs" />

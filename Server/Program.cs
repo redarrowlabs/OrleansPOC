@@ -39,10 +39,12 @@ namespace Server
                 var pt1 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(Guid.Parse("00000000-0000-0000-0000-000000000001"));
                 var pt2 = GrainClient.GrainFactory.GetGrain<IPatientGrain>(Guid.Parse("00000000-0000-0000-0000-000000000002"));
                 var pr1 = GrainClient.GrainFactory.GetGrain<IProviderGrain>(Guid.Parse("00000000-0000-0000-0000-000000000003"));
+                var pr2 = GrainClient.GrainFactory.GetGrain<IProviderGrain>(Guid.Parse("00000000-0000-0000-0000-000000000004"));
 
                 pt1.SetName("Justin Case").Wait();
                 pt2.SetName("Gene Poole").Wait();
                 pr1.SetName("Doctor Snuggles").Wait();
+                pr2.SetName("Doctor Nobody").Wait();
                 pr1.AddPatient(pt1).Wait();
                 pr1.AddPatient(pt2).Wait();
 

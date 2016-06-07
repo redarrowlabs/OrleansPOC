@@ -50,6 +50,20 @@ namespace Identity.Configuration
                         new Claim(Constants.ClaimTypes.Role, "admin"),
                         new Claim(Constants.ClaimTypes.Role, "provider")
                     }
+                },
+                new InMemoryUser
+                {
+                    Username = "dnobody@example.com",
+                    Password = "Testing123",
+                    Subject = "00000000-0000-0000-0000-000000000004",
+                    Claims = new[]
+                    {
+                        new Claim(Constants.ClaimTypes.GivenName, "Doctor"),
+                        new Claim(Constants.ClaimTypes.FamilyName, "Snuggles"),
+                        new Claim(Constants.ClaimTypes.Email, "dnobody@example.com"),
+                        new Claim(Constants.ClaimTypes.Role, "admin"),
+                        new Claim(Constants.ClaimTypes.Role, "provider")
+                    }
                 }
             };
         }
