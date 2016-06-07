@@ -1,6 +1,5 @@
 Import-Module WebAdministration
-Import-Module "sqlps" -DisableNameChecking
-sleep 2
+Sleep 2
 
 Function Create-SslSite
 {
@@ -12,6 +11,12 @@ Function Create-SslSite
 
 	Write-Host "Creating site $Name" -ForegroundColor Green
 	New-Website -Name $Name -PhysicalPath $sitePath -ApplicationPool $appPool -Port $Port -Ssl
+
+	if (Test-Path -LiteralPath $bindingPath)
+	{
+		Write-Host "Removing existing SSL binding" -ForegroundColor Green
+		Remove-Item -Path $bindingPath
+	}
 
 	Write-Host "Creating SSL binding for site $Name" -ForegroundColor Green
 	Get-Item $Cert | New-Item -Path $bindingPath -Force
@@ -42,8 +47,11 @@ Create-SslSite -Name "Client" -Port 44300 -AppPool $appPoolName -Cert $pfxStoreP
 Create-SslSite -Name "Identity" -Port 44301 -AppPool $appPoolName -Cert $pfxStorePath
 Create-SslSite -Name "Api" -Port 44302 -AppPool $appPoolName -Cert $pfxStorePath
 
+Import-Module "sqlps" -DisableNameChecking
+Sleep 2
+
 $orleansScriptPath = Resolve-Path ".\packages\Microsoft.Orleans.OrleansSqlUtils.1.2.1\lib\net451\SQLServer\CreateOrleansTables_SqlServer.sql"
-$sqlInstanceName = $env:COMPUTERNAME + "\SQLEXPRESS"
+$sqlInstanceName = $env:COMPUTERNAME
 
 Write-Host "Creating database" -ForegroundColor Green
 Invoke-SqlCmd -Query "CREATE DATABASE Orleans;" -ServerInstance $sqlInstanceName
