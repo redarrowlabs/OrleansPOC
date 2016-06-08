@@ -76,6 +76,7 @@
 
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
+                        $('#chat_users').empty();
                         $.when(
                             $.getJSON('@chatBaseUrl/' + patientId + '/messages'),
                             $.getJSON('@chatBaseUrl/' + patientId + '/users')

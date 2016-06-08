@@ -11,9 +11,15 @@ namespace Client.Hubs
     [AuthorizeUser]
     public class ChatHub : Hub
     {
-        public override Task OnDisconnected(bool stopCalled)
+        public override async Task OnDisconnected(bool stopCalled)
         {
-            return base.OnDisconnected(stopCalled);
+            var userId = Context.User.GetUserId();
+            if (Context.User.IsPatient())
+            {
+                await LeaveChat(userId, userId);
+            }
+
+            await base.OnDisconnected(stopCalled);
         }
 
         public async Task Join(Guid patientId)
@@ -31,13 +37,8 @@ namespace Client.Hubs
         public async Task Leave(Guid patientId)
         {
             var userId = Context.User.GetUserId();
-            var groupName = patientId.ToString();
-
-            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
-            await chat.Leave(userId);
-
-            await Groups.Remove(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).left(userId);
+            await LeaveChat(userId, patientId);
+            await Groups.Remove(Context.ConnectionId, patientId.ToString());
         }
 
         public async Task SendMessage(Guid patientId, string text)
@@ -53,6 +54,16 @@ namespace Client.Hubs
             await chat.AddMessage(message);
 
             Clients.Group(patientId.ToString()).newMessage(message);
+        }
+
+        private async Task LeaveChat(Guid userId, Guid patientId)
+        {
+            var groupName = patientId.ToString();
+
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            await chat.Leave(userId);
+
+            await Clients.OthersInGroup(patientId.ToString()).left(userId);
         }
 
         private EntityType GetEntityType()

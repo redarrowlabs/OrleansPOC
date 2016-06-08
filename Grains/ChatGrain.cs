@@ -65,6 +65,7 @@ namespace Grains
 
         public async Task Leave(Guid entityId)
         {
+            _joinedEntities.Remove(entityId);
             State.JoinedEntities.Remove(entityId);
             await base.WriteStateAsync();
         }
