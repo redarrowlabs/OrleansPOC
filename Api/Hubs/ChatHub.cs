@@ -11,14 +11,33 @@ namespace Client.Hubs
     [AuthorizeUser]
     public class ChatHub : Hub
     {
-        public Task Join(Guid patientId)
+        public override Task OnDisconnected(bool stopCalled)
         {
-            return Groups.Add(Context.ConnectionId, patientId.ToString());
+            return base.OnDisconnected(stopCalled);
         }
 
-        public Task Leave(Guid patientId)
+        public async Task Join(Guid patientId)
         {
-            return Groups.Remove(Context.ConnectionId, patientId.ToString());
+            var userId = Context.User.GetUserId();
+            var groupName = patientId.ToString();
+
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            var entityName = await chat.Join(Context.User.GetUserId(), GetEntityType());
+
+            await Groups.Add(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).joined(new Entity { Id = userId, Name = entityName });
+        }
+
+        public async Task Leave(Guid patientId)
+        {
+            var userId = Context.User.GetUserId();
+            var groupName = patientId.ToString();
+
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            await chat.Leave(userId);
+
+            await Groups.Remove(Context.ConnectionId, groupName);
+            await Clients.Group(groupName).left(userId);
         }
 
         public async Task SendMessage(Guid patientId, string text)
@@ -34,6 +53,11 @@ namespace Client.Hubs
             await chat.AddMessage(message);
 
             Clients.Group(patientId.ToString()).newMessage(message);
+        }
+
+        private EntityType GetEntityType()
+        {
+            return Context.User.IsPatient() ? EntityType.Patient : EntityType.Provider;
         }
     }
 }

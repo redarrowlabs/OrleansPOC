@@ -2,7 +2,6 @@
 using GrainInterfaces;
 using Orleans;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -22,15 +21,6 @@ namespace Api.Controllers
                 Id = id,
                 Name = await patient.GetName()
             };
-        }
-
-        [HttpGet]
-        [Route("messages")]
-        public Task<IEnumerable<ChatMessage>> Messages(Guid id)
-        {
-            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(id);
-
-            return chat.Messages();
         }
     }
 }

@@ -3,7 +3,7 @@
     ViewBag.Title = "Provider Chat";
 
     var providerBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "provider", Model.Id).ToString();
-    var patientBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "patient").ToString();
+    var chatBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "chat").ToString();
 }
 
 <div class="page-header">
@@ -46,11 +46,23 @@
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
             }
 
+            function addUser(u) {
+                $('#chat_users').append(`<span class="label label-success label-name" data-id="${u.id}">${u.name}</span>`);
+            }
+
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
             $.connection.hub.qs = { 'authToken': '@Model.Token' };
 
             $.connection.chatHub.client.newMessage = function (m) {
                 addMessage(m);
+            };
+
+            $.connection.chatHub.client.joined = function (u) {
+                addUser(u);
+            };
+
+            $.connection.chatHub.client.left = function (id) {
+                $('#chat_users > span[data-id=' + id + ']').remove();
             };
 
             $.getJSON('@providerBaseUrl.AppendPathSegment("patients").ToString()').then(function (data) {
@@ -64,9 +76,16 @@
 
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
-                        $.getJSON('@patientBaseUrl/' + patientId + '/messages').then(function (data) {
-                            data.forEach(function (m) {
+                        $.when(
+                            $.getJSON('@chatBaseUrl/' + patientId + '/messages'),
+                            $.getJSON('@chatBaseUrl/' + patientId + '/users')
+                        ).done(function (j1, j2) {
+                            j1[0].forEach(function (m) {
                                 addMessage(m);
+                            });
+
+                            j2[0].forEach(function (u) {
+                                addUser(u);
                             });
 
                             $.connection.chatHub.server.join(patientId);

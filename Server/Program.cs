@@ -23,7 +23,7 @@ namespace Server
                     serviceConfig.WhenStarted((service, control) => service.Start());
                     serviceConfig.WhenStopped((service, control) => service.Stop());
                     serviceConfig.WhenShutdown((service, control) => service.Stop());
-                    serviceConfig.AfterStartingService(context => SeedData());
+                    //serviceConfig.AfterStartingService(context => SeedData());
                 });
             });
         }

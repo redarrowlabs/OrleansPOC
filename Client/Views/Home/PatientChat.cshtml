@@ -3,7 +3,7 @@
 @{
     ViewBag.Title = "Patient Chat";
 
-    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "patient", Model.Id, "messages").ToString();
+    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "chat", Model.Id).ToString();
 }
 
 <div class="page-header">
@@ -32,6 +32,10 @@
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
             }
 
+            function addUser(u) {
+                $('#chat_users').append(`<span class="label label-success label-name" data-id="${u.id}">${u.name}</span>`);
+            }
+
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
             $.connection.hub.qs = { 'authToken': '@Model.Token' };
 
@@ -39,9 +43,24 @@
                 addMessage(m);
             };
 
-            $.getJSON('@baseUrl').then(function (data) {
-                data.forEach(function (m) {
+            $.connection.chatHub.client.joined = function (u) {
+                addUser(u);
+            };
+
+            $.connection.chatHub.client.left = function (id) {
+                $('#chat_users > span[data-id=' + id + ']').remove();
+            };
+
+            $.when(
+                $.getJSON('@baseUrl.AppendPathSegments("messages").ToString()'),
+                $.getJSON('@baseUrl.AppendPathSegments("users").ToString()')
+            ).done(function (j1, j2) {
+                j1[0].forEach(function (m) {
                     addMessage(m);
+                });
+
+                j2[0].forEach(function (u) {
+                    addUser(u);
                 });
 
                 $.connection.hub.start().done(function () {

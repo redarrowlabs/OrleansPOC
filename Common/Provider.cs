@@ -1,11 +1,6 @@
-﻿using System;
-
-namespace Common
+﻿namespace Common
 {
-    public class Provider
+    public class Provider : Entity
     {
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
     }
 }
