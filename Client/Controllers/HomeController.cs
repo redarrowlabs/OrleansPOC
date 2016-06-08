@@ -31,7 +31,7 @@ namespace Client.Controllers
             if (roles.Any(x => x.Value == "patient"))
             {
                 var patient = await config.ApiBaseUrl
-                    .AppendPathSegments("api", "patient", userId, "chat", "name")
+                    .AppendPathSegments("api", "patient", userId, "name")
                     .WithHeader("Authorization", $"Bearer {token}")
                     .GetJsonAsync<Patient>();
 
@@ -43,7 +43,7 @@ namespace Client.Controllers
             else if (roles.Any(x => x.Value == "provider"))
             {
                 var provider = await config.ApiBaseUrl
-                    .AppendPathSegments("api", "provider", userId, "chat", "name")
+                    .AppendPathSegments("api", "provider", userId, "name")
                     .WithHeader("Authorization", $"Bearer {token}")
                     .GetJsonAsync<Provider>();
 

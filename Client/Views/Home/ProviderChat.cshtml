@@ -2,7 +2,8 @@
 @{
     ViewBag.Title = "Provider Chat";
 
-    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "provider", Model.Id, "chat").ToString();
+    var providerBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "provider", Model.Id).ToString();
+    var patientBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "patient").ToString();
 }
 
 <div class="page-header">
@@ -52,7 +53,7 @@
                 addMessage(m);
             };
 
-            $.getJSON('@baseUrl.AppendPathSegment("patients").ToString()').then(function (data) {
+            $.getJSON('@providerBaseUrl.AppendPathSegment("patients").ToString()').then(function (data) {
                 data.forEach(function (p) {
                     addPatient(p);
                 });
@@ -63,7 +64,7 @@
 
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
-                        $.getJSON('@baseUrl.AppendPathSegment("messages").ToString()/' + patientId).then(function (data) {
+                        $.getJSON('@patientBaseUrl/' + patientId + '/messages').then(function (data) {
                             data.forEach(function (m) {
                                 addMessage(m);
                             });

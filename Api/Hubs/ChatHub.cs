@@ -11,17 +11,17 @@ namespace Client.Hubs
     [AuthorizeUser]
     public class ChatHub : Hub
     {
-        public Task Join(Guid groupId)
+        public Task Join(Guid patientId)
         {
-            return Groups.Add(Context.ConnectionId, groupId.ToString());
+            return Groups.Add(Context.ConnectionId, patientId.ToString());
         }
 
-        public Task Leave(Guid groupId)
+        public Task Leave(Guid patientId)
         {
-            return Groups.Remove(Context.ConnectionId, groupId.ToString());
+            return Groups.Remove(Context.ConnectionId, patientId.ToString());
         }
 
-        public async Task SendMessage(Guid groupId, string text)
+        public async Task SendMessage(Guid patientId, string text)
         {
             var message = new ChatMessage
             {
@@ -30,10 +30,10 @@ namespace Client.Hubs
                 Text = text
             };
 
-            var patient = GrainClient.GrainFactory.GetGrain<IPatientGrain>(groupId);
-            await patient.AddMessage(message);
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            await chat.AddMessage(message);
 
-            Clients.Group(groupId.ToString()).newMessage(message);
+            Clients.Group(patientId.ToString()).newMessage(message);
         }
     }
 }

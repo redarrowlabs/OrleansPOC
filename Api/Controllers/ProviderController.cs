@@ -8,8 +8,8 @@ using System.Web.Http;
 
 namespace Api.Controllers
 {
-    [RoutePrefix("provider/{id:Guid}/chat")]
-    public class ProviderChatController : ApiController
+    [RoutePrefix("provider/{id:Guid}")]
+    public class ProviderController : ApiController
     {
         [HttpGet]
         [Route("name")]
@@ -31,15 +31,6 @@ namespace Api.Controllers
             var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
 
             return await provider.CurrentPatients();
-        }
-
-        [HttpGet]
-        [Route("messages/{patientId:Guid}")]
-        public Task<IEnumerable<ChatMessage>> Messages(Guid id, Guid patientId)
-        {
-            var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(id);
-
-            return provider.Messages(patientId);
         }
     }
 }

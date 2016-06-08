@@ -62,12 +62,5 @@ namespace Grains
                     )
             );
         }
-
-        public async Task<IEnumerable<ChatMessage>> Messages(Guid patientId)
-        {
-            var messages = await _patients[patientId].Messages();
-
-            return messages.OrderBy(x => x.Received).ToList();
-        }
     }
 }

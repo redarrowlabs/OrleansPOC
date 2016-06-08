@@ -204,8 +204,8 @@
     <Compile Include="Infrastructure\SignalRUserIdProvider.cs" />
     <Compile Include="Infrastructure\OrleansExtensions.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Controllers\ProviderChatController.cs" />
-    <Compile Include="Controllers\PatientChatController.cs" />
+    <Compile Include="Controllers\ProviderController.cs" />
+    <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
