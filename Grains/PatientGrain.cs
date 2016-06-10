@@ -1,13 +1,12 @@
 using GrainInterfaces;
 using Grains.State;
-using Orleans;
 using Orleans.Providers;
 using System;
 using System.Threading.Tasks;
 
 namespace Grains
 {
-    [StorageProvider(ProviderName = "JsonStore")]
+    [StorageProvider(ProviderName = "Default")]
     public class PatientGrain : BaseGrain<PatientState>, IPatientGrain
     {
         private IProviderGrain _provider;

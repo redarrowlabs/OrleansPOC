@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Grains
 {
-    [StorageProvider(ProviderName = "JsonStore")]
+    [StorageProvider(ProviderName = "Default")]
     public class ProviderGrain : BaseGrain<ProviderState>, IProviderGrain
     {
         private ObserverSubscriptionManager<INotify> _subscriptions;

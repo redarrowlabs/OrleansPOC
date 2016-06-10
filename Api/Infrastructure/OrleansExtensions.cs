@@ -1,30 +1,35 @@
-﻿using Orleans;
+﻿using Microsoft.Orleans.ServiceFabric.Client;
+using Orleans;
+using Orleans.Runtime;
+using Orleans.Runtime.Configuration;
 using Owin;
 using System;
-using System.IO;
-using System.Reflection;
 
 public static class OrleansMiddleware
 {
     public static void UseOrleans(this IAppBuilder app)
     {
-        var codeBaseUri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
-        var path = Path.GetDirectoryName(Uri.UnescapeDataString(codeBaseUri.Path));
-        var configFilePath = Path.Combine(path, "OrleansConfiguration.xml");
-        var configFile = new FileInfo(configFilePath);
-        if (!configFile.Exists)
-        {
-            throw new FileNotFoundException(
-                $"Cannot find Orleans client config file at {configFile.FullName}",
-                configFile.FullName
-            );
-        }
-
         app.Use(async (context, next) =>
         {
             if (!GrainClient.IsInitialized)
             {
-                GrainClient.Initialize(configFile);
+                var config = new ClientConfiguration
+                {
+                    DataConnectionString = "UseDevelopmentStorage=true",
+                    PropagateActivityId = true,
+                    DefaultTraceLevel = Severity.Info,
+                    GatewayProvider = ClientConfiguration.GatewayProviderType.AzureTable,
+                    TraceToConsole = true,
+                    TraceFileName = null,
+                    TraceFilePattern = null,
+                    ResponseTimeout = TimeSpan.FromSeconds(90),
+                    StatisticsCollectionLevel = StatisticsLevel.Critical,
+                    StatisticsLogWriteInterval = TimeSpan.FromDays(6),
+                    StatisticsMetricsTableWriteInterval = TimeSpan.FromDays(6),
+                    StatisticsPerfCountersWriteInterval = TimeSpan.FromDays(6)
+                };
+
+                OrleansFabricClient.Initialize(new Uri("fabric:/OrleansPOCFabric/SiloService"), config);
             }
 
             await next.Invoke();

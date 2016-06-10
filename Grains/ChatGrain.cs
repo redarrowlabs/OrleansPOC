@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Grains
 {
-    [StorageProvider(ProviderName = "JsonStore")]
+    [StorageProvider(ProviderName = "Default")]
     public class ChatGrain : BaseGrain<ChatState>, IChatGrain
     {
         public async Task<IEnumerable<ChatEntity>> Entities()
