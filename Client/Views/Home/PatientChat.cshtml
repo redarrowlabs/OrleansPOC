@@ -2,8 +2,6 @@
 @using Flurl;
 @{
     ViewBag.Title = "Patient Chat";
-
-    var baseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "chat", Model.Id).ToString();
 }
 
 <div class="page-header">
@@ -30,10 +28,19 @@
 
             function addMessage(m) {
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
+                if (m.viewed.indexOf('@Model.Id') === -1) {
+                    $.connection.chatHub.server.confirmMessage('@Model.Id', m.id);
+                }
             }
 
-            function addUser(u) {
-                $('#chat_users').append(`<span class="label label-success label-name" data-id="${u.id}">${u.name}</span>`);
+            function addUpdateUser(u) {
+                var presenceClass = u.isPresent ? 'list-group-item-success' : '';
+                var $user = $('#chat_users > li[data-id=' + u.entity.id + ']');
+                if ($user.length) {
+                    $user.addClass('list-group-item-success');
+                } else {
+                    $('#chat_users').append(`<li class="list-group-item ${presenceClass}" data-id="${u.entity.id}">${u.entity.name}</li>`);
+                }
             }
 
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
@@ -44,37 +51,32 @@
             };
 
             $.connection.chatHub.client.joined = function (u) {
-                addUser(u);
+                addUpdateUser(u);
             };
 
             $.connection.chatHub.client.left = function (id) {
-                $('#chat_users > span[data-id=' + id + ']').remove();
+                $('#chat_users > li[data-id=' + id + ']').removeClass('list-group-item-success');
             };
 
-            $.when(
-                $.getJSON('@baseUrl.AppendPathSegments("messages").ToString()'),
-                $.getJSON('@baseUrl.AppendPathSegments("users").ToString()')
-            ).done(function (j1, j2) {
-                j1[0].forEach(function (m) {
-                    addMessage(m);
-                });
-
-                j2[0].forEach(function (u) {
-                    addUser(u);
-                });
-
-                $.connection.hub.start().done(function () {
-                    $.connection.chatHub.server.join('@Model.Id');
-
-                    $('#message_input').on('keypress', function () {
-                        var keycode = event.keyCode ? event.keyCode : event.which;
-                        if (keycode == '13') {
-                            sendMessage();
-                        }
+            $.connection.hub.start().done(function () {
+                $.connection.chatHub.server.join('@Model.Id').then(function (response) {
+                    response.messages.forEach(function (m) {
+                        addMessage(m);
                     });
 
-                    $('#send_button').on('click', sendMessage);
+                    response.users.forEach(function (u) {
+                        addUpdateUser(u);
+                    });
                 });
+
+                $('#message_input').on('keypress', function () {
+                    var keycode = event.keyCode ? event.keyCode : event.which;
+                    if (keycode == '13') {
+                        sendMessage();
+                    }
+                });
+
+                $('#send_button').on('click', sendMessage);
             });
         });
     </script>

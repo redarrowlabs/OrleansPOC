@@ -3,7 +3,6 @@
     ViewBag.Title = "Provider Chat";
 
     var providerBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "provider", Model.Id).ToString();
-    var chatBaseUrl = Model.ApiBaseUrl.AppendPathSegments("api", "chat").ToString();
 }
 
 <div class="page-header">
@@ -44,10 +43,19 @@
 
             function addMessage(m) {
                 $('#chat_table > tbody').append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
+                if (m.viewed.indexOf('@Model.Id') === -1) {
+                    $.connection.chatHub.server.confirmMessage(currentPatientId, m.id);
+                }
             }
 
             function addUser(u) {
-                $('#chat_users').append(`<span class="label label-success label-name" data-id="${u.id}">${u.name}</span>`);
+                var presenceClass = u.isPresent ? 'list-group-item-success' : '';
+                var $user = $('#chat_users > li[data-id=' + u.entity.id + ']');
+                if ($user.length) {
+                    $user.addClass('list-group-item-success');
+                } else {
+                    $('#chat_users').append(`<li class="list-group-item ${presenceClass}" data-id="${u.entity.id}">${u.entity.name}</li>`);
+                }
             }
 
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
@@ -62,7 +70,7 @@
             };
 
             $.connection.chatHub.client.left = function (id) {
-                $('#chat_users > span[data-id=' + id + ']').remove();
+                $('#chat_users > li[data-id=' + id + ']').removeClass('list-group-item-success');
             };
 
             $.getJSON('@providerBaseUrl.AppendPathSegment("patients").ToString()').then(function (data) {
@@ -77,21 +85,18 @@
                         $.connection.chatHub.server.leave(currentPatientId);
                         $('#chat_table > tbody').empty();
                         $('#chat_users').empty();
-                        $.when(
-                            $.getJSON('@chatBaseUrl/' + patientId + '/messages'),
-                            $.getJSON('@chatBaseUrl/' + patientId + '/users')
-                        ).done(function (j1, j2) {
-                            j1[0].forEach(function (m) {
+
+                        $.connection.chatHub.server.join(patientId).then(function (response) {
+                            response.messages.forEach(function (m) {
                                 addMessage(m);
                             });
 
-                            j2[0].forEach(function (u) {
+                            response.users.forEach(function (u) {
                                 addUser(u);
                             });
-
-                            $.connection.chatHub.server.join(patientId);
-                            currentPatientId = patientId;
                         });
+
+                        currentPatientId = patientId;
                     });
 
                     $('#message_input').on('keypress', function () {

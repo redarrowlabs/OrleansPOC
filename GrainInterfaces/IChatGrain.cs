@@ -8,14 +8,16 @@ namespace GrainInterfaces
 {
     public interface IChatGrain : IGrainWithGuidKey
     {
-        Task<IEnumerable<Entity>> Users();
+        Task<IEnumerable<ChatEntity>> Entities();
 
         Task<IEnumerable<ChatMessage>> Messages();
-
-        Task AddMessage(ChatMessage message);
 
         Task<string> Join(Guid entityId, EntityType entityType);
 
         Task Leave(Guid entityId);
+
+        Task<ChatMessage> AddMessage(Guid entityId, EntityType entityType, string text);
+
+        Task ConfirmMessage(Guid entityId, Guid messageId);
     }
 }

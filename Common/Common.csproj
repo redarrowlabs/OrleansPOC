@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChatEntity.cs" />
     <Compile Include="ChatMessage.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityType.cs" />

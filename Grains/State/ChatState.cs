@@ -8,12 +8,12 @@ namespace Grains.State
     {
         public ChatState()
         {
-            JoinedEntities = new Dictionary<Guid, EntityType>();
-            Messages = new List<ChatMessage>();
+            Present = new Dictionary<Guid, EntityType>();
+            Messages = new Dictionary<Guid, ChatMessage>();
         }
 
-        public Dictionary<Guid, EntityType> JoinedEntities { get; set; }
+        public Dictionary<Guid, EntityType> Present { get; set; }
 
-        public List<ChatMessage> Messages { get; set; }
+        public Dictionary<Guid, ChatMessage> Messages { get; set; }
     }
 }

@@ -60,7 +60,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Azure.SqlDatabase.ElasticScale.Client, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Azure.SqlDatabase.ElasticScale.Client.1.3.0\lib\net45\Microsoft.Azure.SqlDatabase.ElasticScale.Client.dll</HintPath>
+      <HintPath>..\packages\Microsoft.Azure.SqlDatabase.ElasticScale.Client.1.3.1\lib\net45\Microsoft.Azure.SqlDatabase.ElasticScale.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -196,7 +196,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Infrastructure\AuthorizeUserAttribute.cs" />
     <Compile Include="Infrastructure\IPrincipalExtensions.cs" />
@@ -204,6 +203,7 @@
     <Compile Include="Infrastructure\SignalRContractResolver.cs" />
     <Compile Include="Infrastructure\SignalRUserIdProvider.cs" />
     <Compile Include="Infrastructure\OrleansExtensions.cs" />
+    <Compile Include="Models\ChatJoinResponse.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
@@ -220,9 +220,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{fa67a9fd-d513-49d6-8b41-ce0d381d1239}</Project>

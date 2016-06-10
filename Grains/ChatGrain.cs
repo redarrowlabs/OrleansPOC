@@ -13,50 +13,46 @@ namespace Grains
     [StorageProvider(ProviderName = "JsonStore")]
     public class ChatGrain : Grain<ChatState>, IChatGrain
     {
-        private Dictionary<Guid, IEntityGrain> _joinedEntities;
-
-        public override Task OnActivateAsync()
+        public async Task<IEnumerable<ChatEntity>> Entities()
         {
-            _joinedEntities = State.JoinedEntities
-                .Select(x => GetEntity(x.Key, x.Value))
-                .ToDictionary(x => x.GetPrimaryKey());
-
-            return base.OnActivateAsync();
+            return await Task.WhenAll(
+                State.Messages.Values
+                    .Select(x => new { Id = x.EntityId, Type = x.EntityType })
+                    .Union(State.Present.Select(x => new { Id = x.Key, Type = x.Value }))
+                    .Distinct()
+                    .Select(async x =>
+                    {
+                        var entity = GetEntity(x.Id, x.Type);
+                        return new ChatEntity
+                        {
+                            IsPresent = State.Present.ContainsKey(x.Id),
+                            Entity = new Entity
+                            {
+                                Id = entity.GetPrimaryKey(),
+                                Name = await entity.GetName()
+                            }
+                        };
+                    })
+            );
         }
 
         public Task<IEnumerable<ChatMessage>> Messages()
         {
-            return Task.FromResult(State.Messages.AsEnumerable());
-        }
+            var messages = State.Messages.Values
+                .OrderByDescending(x => x.Received)
+                .Reverse()
+                .ToList()
+                .AsEnumerable();
 
-        public async Task<IEnumerable<Entity>> Users()
-        {
-            return await Task.WhenAll(
-                _joinedEntities.Values
-                    .Select(async x =>
-                        new Entity
-                        {
-                            Id = x.GetPrimaryKey(),
-                            Name = await x.GetName()
-                        }
-                    )
-            );
-        }
-
-        public Task AddMessage(ChatMessage message)
-        {
-            State.Messages.Add(message);
-
-            return base.WriteStateAsync();
+            return Task.FromResult(messages);
         }
 
         public async Task<string> Join(Guid entityId, EntityType entityType)
         {
             var entity = GetEntity(entityId, entityType);
-            if (!_joinedEntities.ContainsKey(entityId))
+            if (!State.Present.ContainsKey(entityId))
             {
-                _joinedEntities.Add(entityId, entity);
-                State.JoinedEntities.Add(entityId, entityType);
+                State.Present.Add(entityId, entityType);
                 await base.WriteStateAsync();
             }
 
@@ -65,9 +61,38 @@ namespace Grains
 
         public async Task Leave(Guid entityId)
         {
-            _joinedEntities.Remove(entityId);
-            State.JoinedEntities.Remove(entityId);
+            State.Present.Remove(entityId);
             await base.WriteStateAsync();
+        }
+
+        public async Task<ChatMessage> AddMessage(Guid entityId, EntityType entityType, string text)
+        {
+            var entity = GetEntity(entityId, entityType);
+            var message = new ChatMessage
+            {
+                Id = Guid.NewGuid(),
+                EntityId = entityId,
+                EntityType = entityType,
+                Name = await entity.GetName(),
+                Received = DateTime.UtcNow,
+                Text = text
+            };
+
+            State.Messages.Add(message.Id, message);
+            await base.WriteStateAsync();
+
+            return message;
+        }
+
+        public Task ConfirmMessage(Guid entityId, Guid messageId)
+        {
+            var message = State.Messages[messageId];
+            if (!message.Viewed.Contains(entityId))
+            {
+                message.Viewed.Add(entityId);
+            }
+
+            return base.WriteStateAsync();
         }
 
         private IEntityGrain GetEntity(Guid entityId, EntityType entityType)

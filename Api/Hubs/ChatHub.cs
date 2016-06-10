@@ -1,9 +1,11 @@
 ﻿using Api.Infrastructure;
+using Api.Models;
 using Common;
 using GrainInterfaces;
 using Microsoft.AspNet.SignalR;
 using Orleans;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Client.Hubs
@@ -18,11 +20,18 @@ namespace Client.Hubs
             {
                 await LeaveChat(userId, userId);
             }
+            else
+            {
+                var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(userId);
+                var patients = await provider.CurrentPatients();
+                var leaveTasks = patients.Select(x => LeaveChat(userId, x.Id)).ToArray();
+                await Task.WhenAll(leaveTasks);
+            }
 
             await base.OnDisconnected(stopCalled);
         }
 
-        public async Task Join(Guid patientId)
+        public async Task<ChatJoinResponse> Join(Guid patientId)
         {
             var userId = Context.User.GetUserId();
             var groupName = patientId.ToString();
@@ -31,7 +40,23 @@ namespace Client.Hubs
             var entityName = await chat.Join(Context.User.GetUserId(), GetEntityType());
 
             await Groups.Add(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).joined(new Entity { Id = userId, Name = entityName });
+            await Clients.OthersInGroup(groupName).joined(
+                new ChatEntity
+                {
+                    IsPresent = true,
+                    Entity = new Entity
+                    {
+                        Id = userId,
+                        Name = entityName
+                    }
+                }
+            );
+
+            return new ChatJoinResponse
+            {
+                Messages = await chat.Messages(),
+                Users = await chat.Entities()
+            };
         }
 
         public async Task Leave(Guid patientId)
@@ -43,26 +68,22 @@ namespace Client.Hubs
 
         public async Task SendMessage(Guid patientId, string text)
         {
-            var message = new ChatMessage
-            {
-                Name = Context.User.GetFullName(),
-                Received = DateTime.UtcNow,
-                Text = text
-            };
-
             var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
-            await chat.AddMessage(message);
+            var message = await chat.AddMessage(Context.User.GetUserId(), GetEntityType(), text);
 
             Clients.Group(patientId.ToString()).newMessage(message);
         }
 
+        public Task ConfirmMessage(Guid patientId, Guid messageId)
+        {
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            return chat.ConfirmMessage(Context.User.GetUserId(), messageId);
+        }
+
         private async Task LeaveChat(Guid userId, Guid patientId)
         {
-            var groupName = patientId.ToString();
-
             var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
             await chat.Leave(userId);
-
             await Clients.OthersInGroup(patientId.ToString()).left(userId);
         }
 
