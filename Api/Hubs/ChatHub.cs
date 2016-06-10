@@ -1,10 +1,12 @@
-﻿using Api.Infrastructure;
+﻿using Api.Hubs;
+using Api.Infrastructure;
 using Api.Models;
 using Common;
 using GrainInterfaces;
 using Microsoft.AspNet.SignalR;
 using Orleans;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,6 +15,31 @@ namespace Client.Hubs
     [AuthorizeUser]
     public class ChatHub : Hub
     {
+        private static readonly ConcurrentDictionary<Guid, INotify> _providerNotifiers;
+
+        static ChatHub()
+        {
+            _providerNotifiers = new ConcurrentDictionary<Guid, INotify>();
+        }
+
+        public override async Task OnConnected()
+        {
+            var userId = Context.User.GetUserId();
+            if (Context.User.IsProvider())
+            {
+                if (!_providerNotifiers.ContainsKey(userId))
+                {
+                    var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(userId);
+                    var notify = await GrainClient.GrainFactory.CreateObjectReference<INotify>(new ProviderNotify(userId));
+                    _providerNotifiers.TryAdd(userId, notify);
+
+                    await provider.Subscribe(notify);
+                }
+            }
+
+            await base.OnConnected();
+        }
+
         public override async Task OnDisconnected(bool stopCalled)
         {
             var userId = Context.User.GetUserId();
@@ -23,6 +50,11 @@ namespace Client.Hubs
             else
             {
                 var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(userId);
+                await provider.Unsubscribe(_providerNotifiers[userId]);
+
+                INotify _;
+                _providerNotifiers.TryRemove(userId, out _);
+
                 var patients = await provider.CurrentPatients();
                 var leaveTasks = patients.Select(x => LeaveChat(userId, x.Id)).ToArray();
                 await Task.WhenAll(leaveTasks);

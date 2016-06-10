@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Grains
 {
     [StorageProvider(ProviderName = "JsonStore")]
-    public class ChatGrain : Grain<ChatState>, IChatGrain
+    public class ChatGrain : BaseGrain<ChatState>, IChatGrain
     {
         public async Task<IEnumerable<ChatEntity>> Entities()
         {
@@ -93,21 +93,6 @@ namespace Grains
             }
 
             return base.WriteStateAsync();
-        }
-
-        private IEntityGrain GetEntity(Guid entityId, EntityType entityType)
-        {
-            switch (entityType)
-            {
-                case EntityType.Patient:
-                    return GrainFactory.GetGrain<IPatientGrain>(entityId);
-
-                case EntityType.Provider:
-                    return GrainFactory.GetGrain<IProviderGrain>(entityId);
-
-                default:
-                    return null;
-            }
         }
     }
 }

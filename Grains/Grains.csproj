@@ -55,6 +55,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseGrain.cs" />
     <Compile Include="ChatGrain.cs" />
     <Compile Include="PatientGrain.cs" />
     <Compile Include="State\ChatState.cs" />

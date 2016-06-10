@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ChatEntity.cs" />
     <Compile Include="ChatMessage.cs" />
+    <Compile Include="ChatNotification.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="EntityType.cs" />
     <Compile Include="Provider.cs" />

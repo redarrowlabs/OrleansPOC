@@ -11,17 +11,36 @@ using System.Threading.Tasks;
 namespace Grains
 {
     [StorageProvider(ProviderName = "JsonStore")]
-    public class ProviderGrain : Grain<ProviderState>, IProviderGrain
+    public class ProviderGrain : BaseGrain<ProviderState>, IProviderGrain
     {
+        private ObserverSubscriptionManager<INotify> _subscriptions;
         private Dictionary<Guid, IPatientGrain> _patients;
 
         public override Task OnActivateAsync()
         {
+            _subscriptions = new ObserverSubscriptionManager<INotify>();
+
             _patients = State.Patients
                 .Select(x => GrainFactory.GetGrain<IPatientGrain>(x))
                 .ToDictionary(x => x.GetPrimaryKey());
 
+            RegisterTimer(Notify, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(30));
+
             return base.OnActivateAsync();
+        }
+
+        public Task Subscribe(INotify notify)
+        {
+            _subscriptions.Subscribe(notify);
+
+            return TaskDone.Done;
+        }
+
+        public Task Unsubscribe(INotify notify)
+        {
+            _subscriptions.Unsubscribe(notify);
+
+            return TaskDone.Done;
         }
 
         public Task<string> GetName()
@@ -61,6 +80,34 @@ namespace Grains
                         }
                     )
             );
+        }
+
+        private async Task Notify(object state)
+        {
+            var allChatMessages = await Task.WhenAll(
+                _patients.Values
+                    .Select(x => GrainFactory.GetGrain<IChatGrain>(x.GetPrimaryKey()))
+                    .Select(async x => await x.Messages())
+            );
+
+            var notifications = await Task.WhenAll(
+                allChatMessages
+                    .SelectMany(x => x)
+                    .Where(x => !x.Viewed.Contains(this.GetPrimaryKey()))
+                    .GroupBy(x => new { x.EntityId, x.EntityType })
+                    .Select(async x =>
+                    {
+                        var entity = GetEntity(x.Key.EntityId, x.Key.EntityType);
+                        return new ChatNotification
+                        {
+                            Name = await entity.GetName(),
+                            Count = x.Count()
+                        };
+                    })
+            );
+
+            GetLogger().Info("Provider {0} has {1} notifications", this.GetPrimaryKey(), notifications.Length);
+            _subscriptions.Notify(x => x.NewMessages(notifications));
         }
     }
 }

@@ -8,6 +8,8 @@
 <div class="page-header">
     <h1>@Model.Name</h1>
 </div>
+<div id="alerts" class="row">
+</div>
 <div class="row">
     <div class="col-sm-4">
         <select id="patient_select" class="form-control">
@@ -60,6 +62,19 @@
 
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
             $.connection.hub.qs = { 'authToken': '@Model.Token' };
+
+            $.connection.chatHub.client.notifyNewMessages = function (unread) {
+                $('#alerts').empty();
+
+                unread.forEach(function (u) {
+                    var alert = `<div class="alert alert-info alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        You have ${u.count} unread message(s) from ${u.name}!
+                    </div>`
+
+                    $('#alerts').append(alert);
+                });
+            };
 
             $.connection.chatHub.client.newMessage = function (m) {
                 addMessage(m);

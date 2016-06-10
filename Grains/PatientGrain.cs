@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Grains
 {
     [StorageProvider(ProviderName = "JsonStore")]
-    public class PatientGrain : Grain<PatientState>, IPatientGrain
+    public class PatientGrain : BaseGrain<PatientState>, IPatientGrain
     {
         private IProviderGrain _provider;
 

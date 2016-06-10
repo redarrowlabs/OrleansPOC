@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="IChatGrain.cs" />
     <Compile Include="IEntityGrain.cs" />
+    <Compile Include="INotify.cs" />
     <Compile Include="IPatientGrain.cs" />
     <Compile Include="IProviderGrain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
