@@ -1,13 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ApplicationManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ApplicationTypeName="OrleansPOCFabricType" ApplicationTypeVersion="1.0.0" xmlns="http://schemas.microsoft.com/2011/01/fabric">
    <Parameters>
+      <Parameter Name="IdentityService_InstanceCount" DefaultValue="-1" />
+      <Parameter Name="ApiService_InstanceCount" DefaultValue="-1" />
       <Parameter Name="SiloService_InstanceCount" DefaultValue="-1" />
    </Parameters>
+   <ServiceManifestImport>
+      <ServiceManifestRef ServiceManifestName="IdentityServicePkg" ServiceManifestVersion="1.0.0" />
+      <ConfigOverrides />
+   </ServiceManifestImport>
+   <ServiceManifestImport>
+      <ServiceManifestRef ServiceManifestName="ApiServicePkg" ServiceManifestVersion="1.0.0" />
+      <ConfigOverrides />
+   </ServiceManifestImport>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="SiloServicePkg" ServiceManifestVersion="1.0.0" />
       <ConfigOverrides />
    </ServiceManifestImport>
    <DefaultServices>
+      <Service Name="IdentityService">
+         <StatelessService ServiceTypeName="IdentityServiceType" InstanceCount="[IdentityService_InstanceCount]">
+            <SingletonPartition />
+         </StatelessService>
+      </Service>
+      <Service Name="ApiService">
+         <StatelessService ServiceTypeName="ApiServiceType" InstanceCount="[ApiService_InstanceCount]">
+            <SingletonPartition />
+         </StatelessService>
+      </Service>
       <Service Name="SiloService">
          <StatelessService ServiceTypeName="SiloServiceType" InstanceCount="[SiloService_InstanceCount]">
             <SingletonPartition />

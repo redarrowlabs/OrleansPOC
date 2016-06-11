@@ -1,18 +1,26 @@
 ## Setup
 
-1. Install [SQL Server 2016 Express](https://download.microsoft.com/download/9/A/E/9AE09369-C53D-4FB7-985B-5CF0D547AE9F/SQLServer2016-SSEI-Expr.exe)
-    - If using something other than a default install of SQL Server Express, you will need to modify the script to point to your target SQL instance
-3. Open Powershell prompt as Administrator
-4. Run 'setup.ps1' script
+1. Install [Redis](https://github.com/MSOpenTech/redis/releases/download/win-3.0.501/Redis-x64-3.0.501.msi)
+2. Install [Azure SDK for VS2015](https://go.microsoft.com/fwlink/?linkid=518003&clcid=0x409)
+3. Install [Azure Storage Emulator](https://go.microsoft.com/fwlink/?linkid=717179&clcid=0x409)
+4. Install [Service Fabric Runtime, SDK, and Tools for VS2015](http://www.microsoft.com/web/handlers/webpi.ashx?command=getinstallerredirect&appid=MicrosoftAzure-ServiceFabric-VS2015)
+5. Open Powershell prompt as Administrator
+6. Run 'setup.ps1' script
 
 ## URLs
 
 - Client: [https://localhost:44300](https://localhost:44300)
 - Identity: [https://localhost:44301](https://localhost:44301)
-- API: [https://localhost:44302](https://localhost:44302)
+- API: [http://localhost:8082](http://localhost:8082)
 
 ## Users
 
 - jcase@example.com / Testing123
 - gpoole@example.com / Testing123
 - dsnuggles@example.com / Testing123
+
+## Misc
+
+- Install [Web Platform Installer](http://go.microsoft.com/fwlink/?LinkId=255386)
+- Using Web Platform Installer, install the following:
+    - Application Request Routing
