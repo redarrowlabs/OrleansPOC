@@ -4,14 +4,39 @@
       <Parameter Name="IdentityService_InstanceCount" DefaultValue="-1" />
       <Parameter Name="ApiService_InstanceCount" DefaultValue="-1" />
       <Parameter Name="SiloService_InstanceCount" DefaultValue="-1" />
+      <Parameter Name="Auth_Authority" DefaultValue="" />
+      <Parameter Name="Redis_Host" DefaultValue="" />
+      <Parameter Name="Redis_Port" DefaultValue="" />
+      <Parameter Name="Redis_Password" DefaultValue="" />
    </Parameters>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="IdentityServicePkg" ServiceManifestVersion="1.0.0" />
-      <ConfigOverrides />
+      <ConfigOverrides>
+         <ConfigOverride Name="Config">
+            <Settings>
+               <Section Name="Auth">
+                  <Parameter Name="Authority" Value="[Auth_Authority]" />
+               </Section>
+            </Settings>
+         </ConfigOverride>
+      </ConfigOverrides>
    </ServiceManifestImport>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="ApiServicePkg" ServiceManifestVersion="1.0.0" />
-      <ConfigOverrides />
+      <ConfigOverrides>
+         <ConfigOverride Name="Config">
+            <Settings>
+               <Section Name="Auth">
+                  <Parameter Name="Authority" Value="[Auth_Authority]" />
+               </Section>
+               <Section Name="Redis">
+                  <Parameter Name="Host" Value="[Redis_Host]" />
+                  <Parameter Name="Port" Value="[Redis_Port]" />
+                  <Parameter Name="Password" Value="[Redis_Password]" />
+               </Section>
+            </Settings>
+         </ConfigOverride>
+      </ConfigOverrides>
    </ServiceManifestImport>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="SiloServicePkg" ServiceManifestVersion="1.0.0" />

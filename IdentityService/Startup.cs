@@ -10,6 +10,8 @@ namespace IdentityService
     {
         public static void ConfigureApp(IAppBuilder app)
         {
+            var authAuthority = (string)app.Properties["AuthAuthority"];
+
             var factory = new IdentityServerServiceFactory()
                 .UseInMemoryUsers(Users.Get())
                 .UseInMemoryClients(Clients.Get())
@@ -22,7 +24,7 @@ namespace IdentityService
                 EnableWelcomePage = false,
                 RequireSsl = false,
                 SiteName = "OrleansPOC",
-                PublicOrigin = "https://localhost:44301"
+                PublicOrigin = authAuthority
             };
 
             app.UseIdentityServer(options);

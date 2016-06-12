@@ -5,6 +5,7 @@ using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using Serilog;
 using System.Web.Http;
 
 namespace ApiService
@@ -13,11 +14,28 @@ namespace ApiService
     {
         public static void ConfigureApp(IAppBuilder app)
         {
+            var authAuthority = (string)app.Properties["AuthAuthority"];
+
             app.UseOrleans();
 
             app.Map("/signalr", builder =>
             {
-                GlobalHost.DependencyResolver.UseRedis("localhost", 6379, null, "OrleansPOC");
+                var redisHost = (string)builder.Properties["RedisHost"];
+                var redisPort = (int)builder.Properties["RedisPort"];
+                var redisPassword = (string)builder.Properties["RedisPassword"];
+
+                Log.Logger.Information("Redis Config: Host {Host} | Port {Port} | Password {Password}",
+                    redisHost,
+                    redisPort,
+                    redisPassword
+                );
+
+                GlobalHost.DependencyResolver.UseRedis(
+                    redisHost,
+                    redisPort,
+                    redisPassword,
+                    "SignalR"
+                );
 
                 var settings = new JsonSerializerSettings { ContractResolver = new SignalRContractResolver() };
                 var serializer = JsonSerializer.Create(settings);
@@ -36,7 +54,7 @@ namespace ApiService
                 builder.UseIdentityServerBearerTokenAuthentication(
                     new IdentityServerBearerTokenAuthenticationOptions
                     {
-                        Authority = "https://localhost:44301",
+                        Authority = authAuthority,
                         ClientId = "00000000-0000-0000-0000-000000000001",
                         ClientSecret = "api-secret",
                         RequiredScopes = new[] { "api" },
@@ -54,7 +72,7 @@ namespace ApiService
                 builder.UseIdentityServerBearerTokenAuthentication(
                     new IdentityServerBearerTokenAuthenticationOptions
                     {
-                        Authority = "https://localhost:44301",
+                        Authority = authAuthority,
                         ClientId = "00000000-0000-0000-0000-000000000001",
                         ClientSecret = "api-secret",
                         RequiredScopes = new[] { "api" }

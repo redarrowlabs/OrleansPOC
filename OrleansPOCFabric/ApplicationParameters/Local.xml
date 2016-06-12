@@ -4,5 +4,9 @@
       <Parameter Name="IdentityService_InstanceCount" Value="1" />
       <Parameter Name="ApiService_InstanceCount" Value="1" />
       <Parameter Name="SiloService_InstanceCount" Value="2" />
+      <Parameter Name="Auth_Authority" Value="https://localhost:44301" />
+      <Parameter Name="Redis_Host" Value="localhost" />
+      <Parameter Name="Redis_Port" Value="6379" />
+      <Parameter Name="Redis_Password" Value="" />
    </Parameters>
 </Application>

@@ -1,7 +1,10 @@
 ﻿using Microsoft.Owin.Hosting;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Owin;
+using Serilog;
+using Serilog.Events;
 using System;
+using System.Collections.Generic;
 using System.Fabric;
 using System.Globalization;
 using System.Threading;
@@ -63,6 +66,11 @@ namespace IdentityService
 
         public Task<string> OpenAsync(CancellationToken cancellationToken)
         {
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.WithProperty("Service", _serviceContext.ServiceName)
+                .WriteTo.Trace(LogEventLevel.Information)
+                .CreateLogger();
+
             var serviceEndpoint = _serviceContext.CodePackageActivationContext.GetEndpoint(_endpointName);
             int port = serviceEndpoint.Port;
 
@@ -102,7 +110,15 @@ namespace IdentityService
             try
             {
                 _eventSource.ServiceMessage(_serviceContext, "Starting web server on " + _listeningAddress);
-                _webApp = WebApp.Start(_listeningAddress, appBuilder => _startup.Invoke(appBuilder));
+                _webApp = WebApp.Start(
+                    _listeningAddress,
+                    appBuilder =>
+                    {
+                        PopulateAppProperties(appBuilder.Properties);
+                        _startup.Invoke(appBuilder);
+                    }
+                );
+
                 _eventSource.ServiceMessage(_serviceContext, "Listening on " + _publishAddress);
 
                 return Task.FromResult(_publishAddress);
@@ -142,6 +158,13 @@ namespace IdentityService
                 }
                 catch (ObjectDisposedException) { }
             }
+        }
+
+        private void PopulateAppProperties(IDictionary<string, object> properties)
+        {
+            var config = _serviceContext.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+
+            properties.Add("AuthAuthority", config.Settings.Sections["Auth"].Parameters["Authority"].Value);
         }
     }
 }
