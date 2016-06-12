@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Client.ViewModels
+namespace ChatClient.ViewModels
 {
     public class ChatViewModel : BaseViewModel
     {

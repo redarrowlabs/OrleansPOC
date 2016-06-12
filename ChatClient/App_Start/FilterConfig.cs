@@ -1,7 +1,7 @@
-﻿using Client.Infrastructure;
+﻿using ChatClient.Infrastructure;
 using System.Web.Mvc;
 
-namespace Client
+namespace ChatClient
 {
     public class FilterConfig
     {

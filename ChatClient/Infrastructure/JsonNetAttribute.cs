@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace Client.Infrastructure
+namespace ChatClient.Infrastructure
 {
     public class JsonNetAttribute : ActionFilterAttribute
     {

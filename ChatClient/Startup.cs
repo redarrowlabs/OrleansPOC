@@ -1,4 +1,6 @@
-﻿using IdentityModel.Client;
+﻿using AppSettingsByConvention;
+using ChatClient.Infrastructure;
+using IdentityModel.Client;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
@@ -7,14 +9,16 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 
-[assembly: OwinStartup(typeof(Client.Startup))]
+[assembly: OwinStartup(typeof(ChatClient.Startup))]
 
-namespace Client
+namespace ChatClient
 {
     public class Startup
     {
         public void Configuration(IAppBuilder app)
         {
+            var config = SettingsByConvention.ForInterface<IConfiguration>();
+
             app.UseCookieAuthentication(
                 new CookieAuthenticationOptions
                 {
@@ -25,9 +29,9 @@ namespace Client
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    Authority = "https://localhost:44301",
+                    Authority = config.Authority,
                     ClientId = "00000000-0000-0000-0000-000000000002",
-                    RedirectUri = "https://localhost:44300",
+                    RedirectUri = config.RedirectUri,
                     ResponseType = "id_token token",
                     Scope = "openid profile email roles api",
                     SignInAsAuthenticationType = "Cookies",

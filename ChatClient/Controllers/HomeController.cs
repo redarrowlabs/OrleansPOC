@@ -1,6 +1,6 @@
 ﻿using AppSettingsByConvention;
-using Client.Infrastructure;
-using Client.ViewModels;
+using ChatClient.Infrastructure;
+using ChatClient.ViewModels;
 using Common;
 using Flurl;
 using Flurl.Http;
@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Client.Controllers
+namespace ChatClient.Controllers
 {
     public class HomeController : Controller
     {

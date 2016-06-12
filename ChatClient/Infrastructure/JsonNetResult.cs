@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Web.Mvc;
 
-namespace Client.Infrastructure
+namespace ChatClient.Infrastructure
 {
     public class JsonNetResult : JsonResult
     {
