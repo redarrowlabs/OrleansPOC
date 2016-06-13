@@ -24,3 +24,4 @@
 - Install [Web Platform Installer](http://go.microsoft.com/fwlink/?LinkId=255386)
 - Using Web Platform Installer, install the following:
     - Application Request Routing
+- Azure Key Vault | Service Fabric Helper [Module](https://github.com/ChackDan/Service-Fabric/archive/master.zip)

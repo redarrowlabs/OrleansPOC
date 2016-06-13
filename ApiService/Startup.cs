@@ -5,7 +5,6 @@ using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using Serilog;
 using System.Web.Http;
 
 namespace ApiService
@@ -15,27 +14,16 @@ namespace ApiService
         public static void ConfigureApp(IAppBuilder app)
         {
             var authAuthority = (string)app.Properties["AuthAuthority"];
+            var redisConnectionString = (string)app.Properties["RedisConnectionString"];
+            var orleansConnectionString = (string)app.Properties["OrleansConnectionString"];
+            var orleansFabricUri = (string)app.Properties["OrleansFabricUri"];
 
-            app.UseOrleans();
+            app.UseOrleans(orleansConnectionString, orleansFabricUri);
 
             app.Map("/signalr", builder =>
             {
-                var redisHost = (string)builder.Properties["RedisHost"];
-                var redisPort = (int)builder.Properties["RedisPort"];
-                var redisPassword = (string)builder.Properties["RedisPassword"];
-
-                Log.Logger.Information("Redis Config: Host {Host} | Port {Port} | Password {Password}",
-                    redisHost,
-                    redisPort,
-                    redisPassword
-                );
-
-                GlobalHost.DependencyResolver.UseRedis(
-                    redisHost,
-                    redisPort,
-                    redisPassword,
-                    "SignalR"
-                );
+                var redisConfig = new RedisScaleoutConfiguration(redisConnectionString, "SignalR");
+                GlobalHost.DependencyResolver.UseRedis(redisConfig);
 
                 var settings = new JsonSerializerSettings { ContractResolver = new SignalRContractResolver() };
                 var serializer = JsonSerializer.Create(settings);

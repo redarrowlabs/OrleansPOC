@@ -5,8 +5,9 @@
       <Parameter Name="ApiService_InstanceCount" Value="1" />
       <Parameter Name="SiloService_InstanceCount" Value="2" />
       <Parameter Name="Auth_Authority" Value="https://localhost:44301" />
-      <Parameter Name="Redis_Host" Value="localhost" />
-      <Parameter Name="Redis_Port" Value="6379" />
-      <Parameter Name="Redis_Password" Value="" />
+      <Parameter Name="Redis_ConnectionString" Value="localhost:6379" />
+      <Parameter Name="Orleans_FabricUri" Value="fabric:/OrleansPOCFabric/SiloService" />
+      <Parameter Name="Orleans_SystemStoreConnectionString" Value="UseDevelopmentStorage=true" />
+      <Parameter Name="Orleans_StorageProviderConnectionString" Value="UseDevelopmentStorage=true" />
    </Parameters>
 </Application>

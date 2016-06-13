@@ -7,7 +7,7 @@ using System;
 
 public static class OrleansMiddleware
 {
-    public static void UseOrleans(this IAppBuilder app)
+    public static void UseOrleans(this IAppBuilder app, string connectionString, string fabricUri)
     {
         app.Use(async (context, next) =>
         {
@@ -15,7 +15,7 @@ public static class OrleansMiddleware
             {
                 var config = new ClientConfiguration
                 {
-                    DataConnectionString = "UseDevelopmentStorage=true",
+                    DataConnectionString = connectionString,
                     PropagateActivityId = true,
                     DefaultTraceLevel = Severity.Info,
                     GatewayProvider = ClientConfiguration.GatewayProviderType.AzureTable,
@@ -29,7 +29,7 @@ public static class OrleansMiddleware
                     StatisticsPerfCountersWriteInterval = TimeSpan.FromDays(6)
                 };
 
-                OrleansFabricClient.Initialize(new Uri("fabric:/OrleansPOCFabric/SiloService"), config);
+                OrleansFabricClient.Initialize(new Uri(fabricUri), config);
             }
 
             await next.Invoke();

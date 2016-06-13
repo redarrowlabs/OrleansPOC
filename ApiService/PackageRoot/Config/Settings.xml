@@ -4,8 +4,10 @@
     <Parameter Name="Authority" Value="" />
   </Section>
   <Section Name="Redis">
-    <Parameter Name="Host" Value="" />
-    <Parameter Name="Port" Value="" />
-    <Parameter Name="Password" Value="" />
+    <Parameter Name="ConnectionString" Value="" />
+  </Section>
+  <Section Name="Orleans">
+    <Parameter Name="FabricUri" Value="" />
+    <Parameter Name="ConnectionString" Value="" />
   </Section>
 </Settings>

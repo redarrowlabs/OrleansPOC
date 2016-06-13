@@ -165,9 +165,9 @@ namespace ApiService
             var config = _serviceContext.CodePackageActivationContext.GetConfigurationPackageObject("Config");
 
             properties.Add("AuthAuthority", config.Settings.Sections["Auth"].Parameters["Authority"].Value);
-            properties.Add("RedisHost", config.Settings.Sections["Redis"].Parameters["Host"].Value);
-            properties.Add("RedisPort", Int32.Parse(config.Settings.Sections["Redis"].Parameters["Port"].Value));
-            properties.Add("RedisPassword", config.Settings.Sections["Redis"].Parameters["Password"].Value);
+            properties.Add("RedisConnectionString", config.Settings.Sections["Redis"].Parameters["ConnectionString"].Value);
+            properties.Add("OrleansConnectionString", config.Settings.Sections["Orleans"].Parameters["ConnectionString"].Value);
+            properties.Add("OrleansFabricUri", config.Settings.Sections["Orleans"].Parameters["FabricUri"].Value);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SiloService
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
             var silo = new ServiceInstanceListener(context =>
-                new OrleansCommunicationListener(context, GetClusterConfiguration(), Partition)
+                new OrleansCommunicationListener(context, GetClusterConfiguration(context), Partition)
             );
 
             return new[] { silo };
@@ -34,30 +34,32 @@ namespace SiloService
             }
         }
 
-        public ClusterConfiguration GetClusterConfiguration()
+        public ClusterConfiguration GetClusterConfiguration(StatelessServiceContext context)
         {
-            var config = new ClusterConfiguration();
+            var config = context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+            var clusterConfig = new ClusterConfiguration();
 
-            config.Defaults.TraceFileName = null;
-            config.Defaults.TraceFilePattern = null;
-            config.Defaults.StatisticsCollectionLevel = StatisticsLevel.Info;
-            config.Defaults.StatisticsLogWriteInterval = TimeSpan.FromDays(6);
-            config.Defaults.TurnWarningLengthThreshold = TimeSpan.FromSeconds(15);
-            config.Defaults.TraceToConsole = true;
-            config.Defaults.DefaultTraceLevel = Severity.Info;
+            clusterConfig.Defaults.TraceFileName = null;
+            clusterConfig.Defaults.TraceFilePattern = null;
+            clusterConfig.Defaults.StatisticsCollectionLevel = StatisticsLevel.Info;
+            clusterConfig.Defaults.StatisticsLogWriteInterval = TimeSpan.FromDays(6);
+            clusterConfig.Defaults.TurnWarningLengthThreshold = TimeSpan.FromSeconds(15);
+            clusterConfig.Defaults.TraceToConsole = true;
+            clusterConfig.Defaults.DefaultTraceLevel = Severity.Info;
 
-            config.Globals.ResponseTimeout = TimeSpan.FromSeconds(90);
-            config.Globals.ReminderServiceType = GlobalConfiguration.ReminderServiceProviderType.AzureTable;
-            config.Globals.LivenessType = GlobalConfiguration.LivenessProviderType.AzureTable;
+            clusterConfig.Globals.ResponseTimeout = TimeSpan.FromSeconds(90);
+            clusterConfig.Globals.ReminderServiceType = GlobalConfiguration.ReminderServiceProviderType.AzureTable;
+            clusterConfig.Globals.LivenessType = GlobalConfiguration.LivenessProviderType.AzureTable;
+            clusterConfig.Globals.DataConnectionString = config.Settings.Sections["Orleans"].Parameters["SystemStoreConnectionString"].Value;
 
             var storageOptions = new Dictionary<string, string>
             {
-                { "DataConnectionString", "UseDevelopmentStorage=true" }
+                { "DataConnectionString", config.Settings.Sections["Orleans"].Parameters["StorageProviderConnectionString"].Value }
             };
 
-            config.Globals.RegisterStorageProvider<AzureBlobStorage>("Default", storageOptions);
+            clusterConfig.Globals.RegisterStorageProvider<AzureBlobStorage>("Default", storageOptions);
 
-            return config;
+            return clusterConfig;
         }
     }
 }

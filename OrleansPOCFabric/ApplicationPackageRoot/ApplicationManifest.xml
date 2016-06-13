@@ -5,9 +5,10 @@
       <Parameter Name="ApiService_InstanceCount" DefaultValue="-1" />
       <Parameter Name="SiloService_InstanceCount" DefaultValue="-1" />
       <Parameter Name="Auth_Authority" DefaultValue="" />
-      <Parameter Name="Redis_Host" DefaultValue="" />
-      <Parameter Name="Redis_Port" DefaultValue="" />
-      <Parameter Name="Redis_Password" DefaultValue="" />
+      <Parameter Name="Redis_ConnectionString" DefaultValue="" />
+      <Parameter Name="Orleans_FabricUri" DefaultValue="" />
+      <Parameter Name="Orleans_SystemStoreConnectionString" DefaultValue="" />
+      <Parameter Name="Orleans_StorageProviderConnectionString" DefaultValue="" />
    </Parameters>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="IdentityServicePkg" ServiceManifestVersion="1.0.0" />
@@ -30,9 +31,11 @@
                   <Parameter Name="Authority" Value="[Auth_Authority]" />
                </Section>
                <Section Name="Redis">
-                  <Parameter Name="Host" Value="[Redis_Host]" />
-                  <Parameter Name="Port" Value="[Redis_Port]" />
-                  <Parameter Name="Password" Value="[Redis_Password]" />
+                  <Parameter Name="ConnectionString" Value="[Redis_ConnectionString]" />
+               </Section>
+               <Section Name="Orleans">
+                  <Parameter Name="FabricUri" Value="[Orleans_FabricUri]" />
+                  <Parameter Name="ConnectionString" Value="[Orleans_SystemStoreConnectionString]" />
                </Section>
             </Settings>
          </ConfigOverride>
@@ -40,7 +43,16 @@
    </ServiceManifestImport>
    <ServiceManifestImport>
       <ServiceManifestRef ServiceManifestName="SiloServicePkg" ServiceManifestVersion="1.0.0" />
-      <ConfigOverrides />
+      <ConfigOverrides>
+         <ConfigOverride Name="Config">
+            <Settings>
+               <Section Name="Orleans">
+                  <Parameter Name="SystemStoreConnectionString" Value="[Orleans_SystemStoreConnectionString]" />
+                  <Parameter Name="StorageProviderConnectionString" Value="[Orleans_StorageProviderConnectionString]" />
+               </Section>
+            </Settings>
+         </ConfigOverride>
+      </ConfigOverrides>
    </ServiceManifestImport>
    <DefaultServices>
       <Service Name="IdentityService">
