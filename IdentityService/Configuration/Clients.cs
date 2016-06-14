@@ -31,11 +31,13 @@ namespace IdentityService.Configuration
                     RequireConsent = false,
                     RedirectUris = new List<string>
                     {
-                        "https://localhost:44300"
+                        "https://localhost:44300",
+                        "http://orleanspocchatclient.azurewebsites.net"
                     },
                     AllowedCorsOrigins = new List<string>
                     {
-                        "https://localhost:44300"
+                        "https://localhost:44300",
+                        "http://orleanspocchatclient.azurewebsites.net"
                     },
                     AllowedScopes = new List<string>
                     {

@@ -62,8 +62,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Orleans.ServiceFabric.Silo, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Microsoft.Orleans.ServiceFabric.Silo.1.2.0\lib\net45\Microsoft.Orleans.ServiceFabric.Silo.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\OrleansFabricSilo\Orleans.Fabric.Silo\bin\Debug\Microsoft.Orleans.ServiceFabric.Silo.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ServiceFabric.Data, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=AMD64">
       <HintPath>..\packages\Microsoft.ServiceFabric.Data.2.0.217\lib\net45\Microsoft.ServiceFabric.Data.dll</HintPath>

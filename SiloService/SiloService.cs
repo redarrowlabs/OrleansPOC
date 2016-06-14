@@ -7,8 +7,6 @@ using Orleans.Storage;
 using System;
 using System.Collections.Generic;
 using System.Fabric;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SiloService
 {
@@ -19,19 +17,10 @@ namespace SiloService
 
         protected override IEnumerable<ServiceInstanceListener> CreateServiceInstanceListeners()
         {
-            var silo = new ServiceInstanceListener(context =>
-                new OrleansCommunicationListener(context, GetClusterConfiguration(context), Partition)
+            yield return new ServiceInstanceListener(
+                context => new OrleansCommunicationListener(context, GetClusterConfiguration(context), Partition),
+                "Orleans"
             );
-
-            return new[] { silo };
-        }
-
-        protected override async Task RunAsync(CancellationToken cancellationToken)
-        {
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-            }
         }
 
         public ClusterConfiguration GetClusterConfiguration(StatelessServiceContext context)
@@ -54,10 +43,11 @@ namespace SiloService
 
             var storageOptions = new Dictionary<string, string>
             {
-                { "DataConnectionString", config.Settings.Sections["Orleans"].Parameters["StorageProviderConnectionString"].Value }
+                { "DataConnectionString", config.Settings.Sections["Orleans"].Parameters["StorageProviderConnectionString"].Value },
+                { "UseJsonFormat", "True" }
             };
 
-            clusterConfig.Globals.RegisterStorageProvider<AzureBlobStorage>("Default", storageOptions);
+            clusterConfig.Globals.RegisterStorageProvider<AzureTableStorage>("Default", storageOptions);
 
             return clusterConfig;
         }

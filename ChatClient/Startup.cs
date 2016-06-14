@@ -22,7 +22,8 @@ namespace ChatClient
             app.UseCookieAuthentication(
                 new CookieAuthenticationOptions
                 {
-                    AuthenticationType = "Cookies"
+                    AuthenticationType = "Cookies",
+                    CookieSecure = CookieSecureOption.SameAsRequest
                 }
             );
 

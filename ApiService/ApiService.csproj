@@ -229,6 +229,7 @@
   <ItemGroup>
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Controllers\ProviderController.cs" />
+    <Compile Include="Controllers\SeedDataController.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\ProviderNotify.cs" />
     <Compile Include="Infrastructure\AuthorizeUserAttribute.cs" />
