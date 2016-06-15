@@ -1,12 +1,11 @@
-﻿using Api.Hubs;
-using Api.Infrastructure;
+﻿using Api.Infrastructure;
 using Api.Models;
 using Common;
 using GrainInterfaces;
 using Microsoft.AspNet.SignalR;
 using Orleans;
+using Orleans.Streams;
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,25 +14,28 @@ namespace Client.Hubs
     [AuthorizeUser]
     public class ChatHub : Hub
     {
-        private static readonly ConcurrentDictionary<Guid, INotify> _providerNotifiers;
-
-        static ChatHub()
-        {
-            _providerNotifiers = new ConcurrentDictionary<Guid, INotify>();
-        }
-
         public override async Task OnConnected()
         {
             var userId = Context.User.GetUserId();
             if (Context.User.IsProvider())
             {
-                if (!_providerNotifiers.ContainsKey(userId))
+                Func<ChatNotification, StreamSequenceToken, Task> handleNotification = (notification, token) =>
                 {
-                    var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(userId);
-                    var notify = await GrainClient.GrainFactory.CreateObjectReference<INotify>(new ProviderNotify(userId));
-                    _providerNotifiers.TryAdd(userId, notify);
+                    var context = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
+                    context.Clients.User(userId.ToString()).notifyNewMessage(notification);
+                    return TaskDone.Done;
+                };
 
-                    await provider.Subscribe(notify);
+                var streamProvider = GrainClient.GetStreamProvider("Default");
+                var stream = streamProvider.GetStream<ChatNotification>(Context.User.GetUserId(), "ChatNotifications");
+                var subscriptions = await stream.GetAllSubscriptionHandles();
+                if (subscriptions.Any())
+                {
+                    await Task.WhenAll(subscriptions.Select(x => x.ResumeAsync(handleNotification)));
+                }
+                else
+                {
+                    await stream.SubscribeAsync(handleNotification);
                 }
             }
 
@@ -49,15 +51,14 @@ namespace Client.Hubs
             }
             else
             {
+                var streamProvider = GrainClient.GetStreamProvider("Default");
+                var stream = streamProvider.GetStream<ChatNotification>(Context.User.GetUserId(), "ChatNotifications");
+                var subscriptions = await stream.GetAllSubscriptionHandles();
+                await Task.WhenAll(subscriptions.Select(x => x.UnsubscribeAsync()));
+
                 var provider = GrainClient.GrainFactory.GetGrain<IProviderGrain>(userId);
-                await provider.Unsubscribe(_providerNotifiers[userId]);
-
-                INotify _;
-                _providerNotifiers.TryRemove(userId, out _);
-
                 var patients = await provider.CurrentPatients();
-                var leaveTasks = patients.Select(x => LeaveChat(userId, x.Id)).ToArray();
-                await Task.WhenAll(leaveTasks);
+                await Task.WhenAll(patients.Select(x => LeaveChat(userId, x.Id)));
             }
 
             await base.OnDisconnected(stopCalled);

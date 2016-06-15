@@ -63,17 +63,13 @@
             $.connection.hub.url = '@Model.ApiBaseUrl.AppendPathSegment("signalr").ToString()';
             $.connection.hub.qs = { 'authToken': '@Model.Token' };
 
-            $.connection.chatHub.client.notifyNewMessages = function (unread) {
-                $('#alerts').empty();
-
-                unread.forEach(function (u) {
-                    var alert = `<div class="alert alert-info alert-dismissible" role="alert">
+            $.connection.chatHub.client.notifyNewMessage = function (notification) {
+                var alert = `<div class="alert alert-info alert-dismissible" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        You have ${u.count} unread message(s) from ${u.name}!
+                        You have ${notification.count} unread message(s) from ${notification.name}!
                     </div>`
 
-                    $('#alerts').append(alert);
-                });
+                $('#alerts').append(alert);
             };
 
             $.connection.chatHub.client.newMessage = function (m) {

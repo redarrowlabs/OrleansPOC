@@ -13,13 +13,10 @@ namespace Grains
     [StorageProvider(ProviderName = "JsonStore")]
     public class ProviderGrain : BaseGrain<ProviderState>, IProviderGrain
     {
-        private ObserverSubscriptionManager<INotify> _subscriptions;
         private Dictionary<Guid, IPatientGrain> _patients;
 
         public override Task OnActivateAsync()
         {
-            _subscriptions = new ObserverSubscriptionManager<INotify>();
-
             _patients = State.Patients
                 .Select(x => GrainFactory.GetGrain<IPatientGrain>(x))
                 .ToDictionary(x => x.GetPrimaryKey());
@@ -27,20 +24,6 @@ namespace Grains
             RegisterTimer(Notify, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(30));
 
             return base.OnActivateAsync();
-        }
-
-        public Task Subscribe(INotify notify)
-        {
-            _subscriptions.Subscribe(notify);
-
-            return TaskDone.Done;
-        }
-
-        public Task Unsubscribe(INotify notify)
-        {
-            _subscriptions.Unsubscribe(notify);
-
-            return TaskDone.Done;
         }
 
         public Task<string> GetName()
@@ -107,7 +90,13 @@ namespace Grains
             );
 
             GetLogger().Info("Provider {0} has {1} notifications", this.GetPrimaryKey(), notifications.Length);
-            _subscriptions.Notify(x => x.NewMessages(notifications));
+
+            var streamProvider = GetStreamProvider("Default");
+            var stream = streamProvider.GetStream<ChatNotification>(this.GetPrimaryKey(), "ChatNotifications");
+            foreach (var n in notifications)
+            {
+                await stream.OnNextAsync(n);
+            }
         }
     }
 }

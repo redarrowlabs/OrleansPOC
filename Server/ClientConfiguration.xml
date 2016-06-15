@@ -2,6 +2,6 @@
   <SystemStore
     SystemStoreType="SqlServer"
     DeploymentId="OrleansPOC"
-    DataConnectionString="Data Source=localhost\SQLEXPRESS;Initial Catalog=Orleans;Integrated Security=True;Pooling=False;Max Pool Size=200;Asynchronous Processing=True;MultipleActiveResultSets=True"
+    DataConnectionString="Data Source=localhost;Initial Catalog=Orleans;Integrated Security=True;Pooling=False;Max Pool Size=200;Asynchronous Processing=True;MultipleActiveResultSets=True"
     AdoInvariant="System.Data.SqlClient" />
 </ClientConfiguration>
