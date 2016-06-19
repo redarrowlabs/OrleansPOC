@@ -17,6 +17,24 @@
         });
 
         $(function () {
+            function search() {
+                var searchValue = $('#search_input').val();
+                if (searchValue && searchValue.length > 2) {
+                    $.connection.chatHub.server.search('@Model.Id', searchValue).then(function (messages) {
+                        $('#search_input').val(null);
+
+                        var $searchModal = $('#search_modal');
+                        var $searchModalTableBody = $searchModal.find('#search_table > tbody');
+                        $searchModalTableBody.empty();
+                        messages.forEach(function (m) {
+                            $searchModalTableBody.append(`<tr><td>${m.name}</td><td>${m.text}</td><td>${moment(m.received).format('lll')}</td></tr>`);
+                        });
+
+                        $searchModal.modal('show');
+                    });
+                }
+            }
+
             function sendMessage() {
                 var message = $('#message_input').val();
                 if (message) {
@@ -68,6 +86,15 @@
                         addUpdateUser(u);
                     });
                 });
+
+                $('#search_input').on('keypress', function () {
+                    var keycode = event.keyCode ? event.keyCode : event.which;
+                    if (keycode == '13') {
+                        search();
+                    }
+                });
+
+                $('#search_button').on('click', search);
 
                 $('#message_input').on('keypress', function () {
                     var keycode = event.keyCode ? event.keyCode : event.which;

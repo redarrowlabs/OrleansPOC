@@ -19,5 +19,7 @@ namespace GrainInterfaces
         Task<ChatMessage> AddMessage(Guid entityId, EntityType entityType, string text);
 
         Task ConfirmMessage(Guid entityId, Guid messageId);
+
+        Task<IEnumerable<ChatMessage>> Search(string searchValue);
     }
 }

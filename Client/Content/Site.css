@@ -12,3 +12,8 @@
 .label-name {
     margin-right: 8px;
 }
+
+.chat-container {
+    height: 600px;
+    overflow: auto;
+}

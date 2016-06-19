@@ -1,6 +1,13 @@
 ﻿using Common;
 using GrainInterfaces;
+using Grains.Infrastructure;
 using Grains.State;
+using Lucene.Net.Analysis.Standard;
+using Lucene.Net.Documents;
+using Lucene.Net.Index;
+using Lucene.Net.QueryParsers;
+using Lucene.Net.Search;
+using Lucene.Net.Store;
 using Orleans;
 using Orleans.Providers;
 using System;
@@ -13,6 +20,38 @@ namespace Grains
     [StorageProvider(ProviderName = "JsonStore")]
     public class ChatGrain : BaseGrain<ChatState>, IChatGrain
     {
+        private RAMDirectory _directory;
+
+        public override Task OnActivateAsync()
+        {
+            _directory = new RAMDirectory();
+            using (var ngram = new NGramAnalyzer())
+            using (var indexWriter = new IndexWriter(_directory, ngram, IndexWriter.MaxFieldLength.LIMITED))
+            {
+                foreach (var m in State.Messages)
+                {
+                    var doc = new Document();
+                    doc.Add(new Field("Id", m.Key.ToString(), Field.Store.YES, Field.Index.NO));
+                    doc.Add(new Field("Text", m.Value.Text, Field.Store.NO, Field.Index.ANALYZED));
+                    indexWriter.AddDocument(doc);
+                }
+
+                indexWriter.Optimize();
+            }
+
+            return base.OnActivateAsync();
+        }
+
+        public override Task OnDeactivateAsync()
+        {
+            if (_directory != null)
+            {
+                _directory.Dispose();
+            }
+
+            return base.OnDeactivateAsync();
+        }
+
         public async Task<IEnumerable<ChatEntity>> Entities()
         {
             return await Task.WhenAll(
@@ -81,6 +120,14 @@ namespace Grains
             State.Messages.Add(message.Id, message);
             await base.WriteStateAsync();
 
+            using (var indexWriter = new IndexWriter(_directory, new NGramAnalyzer(), IndexWriter.MaxFieldLength.LIMITED))
+            {
+                var doc = new Document();
+                doc.Add(new Field("Id", message.Id.ToString(), Field.Store.YES, Field.Index.NO));
+                doc.Add(new Field("Text", message.Text, Field.Store.NO, Field.Index.ANALYZED));
+                indexWriter.AddDocument(doc);
+            }
+
             return message;
         }
 
@@ -93,6 +140,34 @@ namespace Grains
             }
 
             return base.WriteStateAsync();
+        }
+
+        public Task<IEnumerable<ChatMessage>> Search(string searchValue)
+        {
+            var result = Enumerable.Empty<ChatMessage>();
+
+            using (var indexReader = IndexReader.Open(_directory, true))
+            using (var indexSearcher = new IndexSearcher(indexReader))
+            using (var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30))
+            {
+                var queryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "Text", analyzer);
+                var query = queryParser.Parse(searchValue);
+                var hits = indexSearcher.Search(query, 10);
+                if (hits.TotalHits > 0)
+                {
+                    result = hits.ScoreDocs
+                        .Select(x =>
+                        {
+                            var doc = indexSearcher.Doc(x.Doc);
+                            var messageId = Guid.Parse(doc.GetField("Id").StringValue);
+                            return State.Messages[messageId];
+                        })
+                        .OrderBy(x => x.Received)
+                        .ToList();
+                }
+            }
+
+            return Task.FromResult(result);
         }
     }
 }

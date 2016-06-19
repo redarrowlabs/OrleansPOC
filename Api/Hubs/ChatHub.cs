@@ -6,6 +6,7 @@ using Microsoft.AspNet.SignalR;
 using Orleans;
 using Orleans.Streams;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -111,6 +112,12 @@ namespace Client.Hubs
         {
             var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
             return chat.ConfirmMessage(Context.User.GetUserId(), messageId);
+        }
+
+        public async Task<IEnumerable<ChatMessage>> Search(Guid patientId, string searchValue)
+        {
+            var chat = GrainClient.GrainFactory.GetGrain<IChatGrain>(patientId);
+            return await chat.Search(searchValue);
         }
 
         private async Task LeaveChat(Guid userId, Guid patientId)
