@@ -17,9 +17,12 @@ using System.Threading.Tasks;
 
 namespace Grains
 {
-    [StorageProvider(ProviderName = "JsonStore")]
+    [StorageProvider(ProviderName = "Default")]
     public class ChatGrain : BaseGrain<ChatState>, IChatGrain
     {
+        private const string INDEX_KEY = "Id";
+        private const string INDEX_VALUE = "Text";
+
         private RAMDirectory _directory;
 
         public override Task OnActivateAsync()
@@ -31,8 +34,8 @@ namespace Grains
                 foreach (var m in State.Messages)
                 {
                     var doc = new Document();
-                    doc.Add(new Field("Id", m.Key.ToString(), Field.Store.YES, Field.Index.NO));
-                    doc.Add(new Field("Text", m.Value.Text, Field.Store.NO, Field.Index.ANALYZED));
+                    doc.Add(new Field(INDEX_KEY, m.Key.ToString(), Field.Store.YES, Field.Index.NO));
+                    doc.Add(new Field(INDEX_VALUE, m.Value.Text, Field.Store.NO, Field.Index.ANALYZED));
                     indexWriter.AddDocument(doc);
                 }
 
@@ -150,7 +153,7 @@ namespace Grains
             using (var indexSearcher = new IndexSearcher(indexReader))
             using (var analyzer = new StandardAnalyzer(Lucene.Net.Util.Version.LUCENE_30))
             {
-                var queryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, "Text", analyzer);
+                var queryParser = new QueryParser(Lucene.Net.Util.Version.LUCENE_30, INDEX_VALUE, analyzer);
                 var query = queryParser.Parse(searchValue);
                 var hits = indexSearcher.Search(query, 10);
                 if (hits.TotalHits > 0)
@@ -159,7 +162,7 @@ namespace Grains
                         .Select(x =>
                         {
                             var doc = indexSearcher.Doc(x.Doc);
-                            var messageId = Guid.Parse(doc.GetField("Id").StringValue);
+                            var messageId = Guid.Parse(doc.GetField(INDEX_KEY).StringValue);
                             return State.Messages[messageId];
                         })
                         .OrderBy(x => x.Received)

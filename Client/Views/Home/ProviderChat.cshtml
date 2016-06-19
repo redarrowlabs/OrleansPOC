@@ -11,12 +11,24 @@
 <div id="alerts" class="row">
 </div>
 <div class="row">
+    <div class="col-sm-6">
+        <div class="input-group">
+            <input id="patient_search_input" type="text" class="form-control" placeholder="Patient Name" maxlength="8">
+            <span class="input-group-btn">
+                <button id="patient_search_button" class="btn btn-default" type="button">Search</button>
+            </span>
+        </div>
+    </div>
+</div>
+<hr />
+<div class="row">
     <div class="col-sm-4">
         <select id="patient_select" class="form-control">
             <option value="" selected disabled>Select Patient</option>
         </select>
     </div>
 </div>
+<hr />
 @Html.Partial("_Chat")
 
 @section Scripts {
@@ -28,6 +40,21 @@
 
         $(function () {
             var currentPatientId;
+
+            function patientSearch() {
+                var searchValue = $('#patient_search_input').val();
+                if (searchValue && searchValue.length > 2) {
+                    $.getJSON('@providerBaseUrl.AppendPathSegments("patients", "search")', { searchValue: searchValue }).then(function (patients) {
+                        $('#patient_search_input').val(null);
+                        if (patients.length) {
+                            var match = $('#patient_select > option[value=' + patients[0].id + ']');
+                            if (match.length) {
+                                $('#patient_select').val(patients[0].id).change();
+                            }
+                        }
+                    });
+                }
+            }
 
             function search() {
                 var searchValue = $('#search_input').val();
@@ -127,6 +154,15 @@
 
                         currentPatientId = patientId;
                     });
+
+                    $('#patient_search_input').on('keypress', function () {
+                        var keycode = event.keyCode ? event.keyCode : event.which;
+                        if (keycode == '13') {
+                            patientSearch();
+                        }
+                    });
+
+                    $('#patient_search_button').on('click', patientSearch);
 
                     $('#search_input').on('keypress', function () {
                         var keycode = event.keyCode ? event.keyCode : event.which;

@@ -32,5 +32,15 @@ namespace Api.Controllers
 
             return await provider.CurrentPatients();
         }
+
+        [HttpGet]
+        [Route("patients/search")]
+        public async Task<IEnumerable<Patient>> Search(string searchValue)
+        {
+            // TODO: filter based on provider
+            var patientSearch = GrainClient.GrainFactory.GetGrain<IPatientSearchGrain>(Guid.Empty);
+
+            return await patientSearch.Search(searchValue);
+        }
     }
 }

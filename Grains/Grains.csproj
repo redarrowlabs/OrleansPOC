@@ -103,7 +103,9 @@
     <Compile Include="ChatGrain.cs" />
     <Compile Include="Infrastructure\NGramAnalyzer.cs" />
     <Compile Include="PatientGrain.cs" />
+    <Compile Include="PatientSearchGrain.cs" />
     <Compile Include="State\ChatState.cs" />
+    <Compile Include="State\PatientSearchState.cs" />
     <Compile Include="State\PatientState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\orleans.codegen.cs" />

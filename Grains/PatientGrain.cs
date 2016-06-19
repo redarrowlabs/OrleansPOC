@@ -1,3 +1,4 @@
+using Common;
 using GrainInterfaces;
 using Grains.State;
 using Orleans;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Grains
 {
-    [StorageProvider(ProviderName = "JsonStore")]
+    [StorageProvider(ProviderName = "Default")]
     public class PatientGrain : BaseGrain<PatientState>, IPatientGrain
     {
         private IProviderGrain _provider;
@@ -27,11 +28,21 @@ namespace Grains
             return Task.FromResult(State.Name);
         }
 
-        public Task SetName(string name)
+        public async Task SetName(string name)
         {
             State.Name = name;
 
-            return base.WriteStateAsync();
+            await base.WriteStateAsync();
+
+            var streamProvider = GetStreamProvider("Default");
+            var stream = streamProvider.GetStream<Patient>(Guid.Empty, PatientSearchGrain.STREAM_NAMESPACE);
+            await stream.OnNextAsync(
+                new Patient
+                {
+                    Id = this.GetPrimaryKey(),
+                    Name = name
+                }
+            );
         }
 
         public Task SetProvider(Guid providerId)
