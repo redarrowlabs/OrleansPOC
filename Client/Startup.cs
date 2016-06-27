@@ -25,9 +25,9 @@ namespace Client
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
-                    Authority = "https://localhost:44301",
+                    Authority = "https://localhost:44311",
                     ClientId = "00000000-0000-0000-0000-000000000002",
-                    RedirectUri = "https://localhost:44300",
+                    RedirectUri = "https://localhost:44310",
                     ResponseType = "id_token token",
                     Scope = "openid profile email roles api",
                     SignInAsAuthenticationType = "Cookies",

@@ -37,7 +37,7 @@ namespace Api
                 builder.UseIdentityServerBearerTokenAuthentication(
                     new IdentityServerBearerTokenAuthenticationOptions
                     {
-                        Authority = "https://localhost:44301",
+                        Authority = "https://localhost:44311",
                         ClientId = "00000000-0000-0000-0000-000000000001",
                         ClientSecret = "api-secret",
                         RequiredScopes = new[] { "api" },
@@ -55,7 +55,7 @@ namespace Api
                 builder.UseIdentityServerBearerTokenAuthentication(
                     new IdentityServerBearerTokenAuthenticationOptions
                     {
-                        Authority = "https://localhost:44301",
+                        Authority = "https://localhost:44311",
                         ClientId = "00000000-0000-0000-0000-000000000001",
                         ClientSecret = "api-secret",
                         RequiredScopes = new[] { "api" }

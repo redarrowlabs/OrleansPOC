@@ -31,11 +31,11 @@ namespace Identity.Configuration
                     RequireConsent = false,
                     RedirectUris = new List<string>
                     {
-                        "https://localhost:44300"
+                        "https://localhost:44310"
                     },
                     AllowedCorsOrigins = new List<string>
                     {
-                        "https://localhost:44300"
+                        "https://localhost:44310"
                     },
                     AllowedScopes = new List<string>
                     {

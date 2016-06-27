@@ -1,5 +1,6 @@
 ﻿using Common;
 using GrainInterfaces;
+using GrainInterfaces.Search;
 using Orleans;
 using System;
 using System.Collections.Generic;
@@ -38,9 +39,9 @@ namespace Api.Controllers
         public async Task<IEnumerable<Patient>> Search(string searchValue)
         {
             // TODO: filter based on provider
-            var patientSearch = GrainClient.GrainFactory.GetGrain<IPatientSearchGrain>(Guid.Empty);
+            var patientSearch = GrainClient.GrainFactory.GetGrain<IPatientSearchReader>(Guid.Empty);
 
-            return await patientSearch.Search(searchValue);
+            return await patientSearch.Search(Guid.NewGuid().ToString(), searchValue);
         }
     }
 }

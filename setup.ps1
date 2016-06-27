@@ -43,9 +43,9 @@ $appPool = New-WebAppPool $appPoolName
 $appPool.managedRuntimeVersion = "v4.0"
 $appPool | Set-Item
 
-Create-SslSite -Name "Client" -Port 44300 -AppPool $appPoolName -Cert $pfxStorePath
-Create-SslSite -Name "Identity" -Port 44301 -AppPool $appPoolName -Cert $pfxStorePath
-Create-SslSite -Name "Api" -Port 44302 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Client" -Port 44310 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Identity" -Port 44311 -AppPool $appPoolName -Cert $pfxStorePath
+Create-SslSite -Name "Api" -Port 44312 -AppPool $appPoolName -Cert $pfxStorePath
 
 Import-Module "sqlps" -DisableNameChecking
 Sleep 2

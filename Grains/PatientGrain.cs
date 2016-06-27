@@ -1,5 +1,6 @@
 using Common;
 using GrainInterfaces;
+using GrainInterfaces.Search;
 using Grains.State;
 using Orleans;
 using Orleans.Providers;
@@ -34,9 +35,8 @@ namespace Grains
 
             await base.WriteStateAsync();
 
-            var streamProvider = GetStreamProvider("Default");
-            var stream = streamProvider.GetStream<Patient>(Guid.Empty, PatientSearchGrain.STREAM_NAMESPACE);
-            await stream.OnNextAsync(
+            var searchWriter = GrainFactory.GetGrain<IPatientSearchWriter>(Guid.Empty);
+            await searchWriter.Update(
                 new Patient
                 {
                     Id = this.GetPrimaryKey(),
