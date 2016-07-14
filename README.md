@@ -7,9 +7,9 @@
 
 ## URLs
 
-- Client: [https://localhost:44300](https://localhost:44310)
-- Identity: [https://localhost:44301](https://localhost:44311)
-- API: [https://localhost:44302](https://localhost:44312)
+- Client: [https://localhost:44310](https://localhost:44310)
+- Identity: [https://localhost:44311](https://localhost:44311)
+- API: [https://localhost:44312](https://localhost:44312)
 
 ## Users
 
