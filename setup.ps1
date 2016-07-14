@@ -32,7 +32,7 @@ Invoke-Expression $build
 
 Write-Host "Importing certificate" -ForegroundColor Green
 $certPath = Resolve-Path ".\localhost.pfx"
-$pwd = ConvertTo-SecureString -String "Testing123" -Force –AsPlainText
+$pwd = ConvertTo-SecureString -String "Testing123" -Force â€“AsPlainText
 Import-PfxCertificate -FilePath $certPath -Password $pwd -CertStoreLocation cert:\LocalMachine\Root
 $pfx = Import-PfxCertificate -FilePath $certPath -Password $pwd -CertStoreLocation cert:\LocalMachine\My
 $pfxStorePath = "cert:\LocalMachine\My\" + $pfx.Thumbprint
@@ -50,7 +50,7 @@ Create-SslSite -Name "Api" -Port 44312 -AppPool $appPoolName -Cert $pfxStorePath
 Import-Module "sqlps" -DisableNameChecking
 Sleep 2
 
-$orleansScriptPath = Resolve-Path ".\packages\Microsoft.Orleans.OrleansSqlUtils.1.2.1\lib\net451\SQLServer\CreateOrleansTables_SqlServer.sql"
+$orleansScriptPath = Resolve-Path ".\packages\Microsoft.Orleans.OrleansSqlUtils.1.2.3\lib\net451\SQLServer\CreateOrleansTables_SqlServer.sql"
 $sqlInstanceName = $env:COMPUTERNAME
 
 Write-Host "Creating database" -ForegroundColor Green
